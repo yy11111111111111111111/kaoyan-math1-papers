@@ -77,8 +77,27 @@ def parse(year, expect_by_type):
     flush()
     return out
 
-def flags_for(text):
+# 语义可疑词：`(可疑词, 需同时出现的上下文, 说明)`。只标记，**绝不静默改写**。
+SEMANTIC_SUSPECT = [
+    ('两两相交',  ['向量', 'alpha', 'beta', 'α', 'β', 'pmb', 'boldsymbol'],
+     '向量组之间说「相交」在数学上不通，疑为「正交」的 OCR 讹误'),
+    ('相互相交',  ['向量', 'α', 'β'], '同上'),
+    ('线性相交',  [], '疑为「线性相关」或「线性无关」'),
+    ('可倒',      [], '疑为「可导」'),
+    ('连续可到',  [], '疑为「连续可导」'),
+    ('收连',      [], '疑为「收敛」'),
+    ('极值点为',  ['不存在极限'], '语义自相矛盾，需人工判读'),
+]
+
+def semantic_flags(text):
     out = []
+    for term, ctx, why in SEMANTIC_SUSPECT:
+        if term in text and (not ctx or any(c in text for c in ctx)):
+            out.append(dict(span=term, reason='term_semantically_suspect', note=why))
+    return out
+
+def flags_for(text):
+    out = semantic_flags(text)
     if '![' in text: out.append(dict(span='<figure>', reason='figure_present_in_source'))
     for bad in ['□', '\ufffd', '〓']:
         if bad in text: out.append(dict(span=bad, reason='symbol_ambiguous'))
