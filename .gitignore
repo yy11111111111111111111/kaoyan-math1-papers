@@ -12,3 +12,10 @@ Thumbs.db
 # Temp
 *.tmp
 *.log
+
+# Python
+__pycache__/
+*.pyc
+
+# 分析/tests 的中间产物（由 build_problem_bank.py 重新生成）
+分析/tests/_bank.json
