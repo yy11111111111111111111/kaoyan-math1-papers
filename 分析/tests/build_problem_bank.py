@@ -154,6 +154,10 @@ generator: 分析/tests/build_problem_bank.py
 > - **2022 年整年**：题面文件全文乱码。
 > - **2024–2026 三套**：留作模考，2026-11-29 前不入库。
 > - **2023-9**：四个选项全空，题面无法复原（`待确认.md` §一）。
+>
+> 排除项**保留 tombstone 记录**（`source_status: unusable`，正文为 `[UNAVAILABLE: …]`），
+> 以区分「库里根本没有这题」与「库知道这题存在、但当前来源无法恢复可靠题面」。
+> 拿到原卷后直接替换为 `verified_from_paper`。
 {manual}
 ---
 
@@ -167,7 +171,44 @@ def emit(banks):
                if a <= int(k.split('-')[0]) <= b]
         body = [HEAD.format(a=a, b=b, manual=('\n'.join(man) + '\n') if man else '')]
         n = 0
+        idx = tsv_index()
+        tomb = {}
+        for pid, why in list(NEEDS_MANUAL.items()) + [(k, '四个选项全部为空，题面无法复原（待确认.md §一）。') for k in UNUSABLE]:
+            yy, nn = pid.split('-')
+            if a <= int(yy) <= b: tomb[(int(yy), int(nn))] = why
         for y in ys:
+            for nn, why in sorted([(k[1], v) for k, v in tomb.items() if k[0] == y]):
+                pid = f'{y}-{nn}'
+                qt = idx[y].get(str(nn), '未知')
+                body.append(f'''## {pid}
+
+```yaml
+problem_id: {pid}
+year: {y}
+number: {nn}
+question_type: {qt}
+source_status: unusable
+source_basis: ocr_conversion_only
+transcription_mode: none
+transcription_check: impossible_from_current_source
+uncertainty_flags:
+    - span: "<whole_item>"
+      reason: source_structure_corrupted
+figure_status: none
+figure_ref: null
+source_page: null
+```
+
+### 题面
+
+[UNAVAILABLE: {why}]
+
+<!-- END_PROBLEM:{pid} -->
+
+---
+
+''')
+                n += 1
             for it in sorted(banks[y], key=lambda x: x['number']):
                 fl = it['uncertainty_flags']
                 fls = '[]' if not fl else '\n' + '\n'.join(
