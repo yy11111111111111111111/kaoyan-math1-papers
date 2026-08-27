@@ -1,6 +1,6 @@
 ---
 doc_id: teach.handoff
-doc_version: 1.0.0
+doc_version: 1.1.0
 scope: 给教学 AI 的总入口
 source_tsv_sha256: cbdf1a55989a8f60
 generated_at: 2026-08-27

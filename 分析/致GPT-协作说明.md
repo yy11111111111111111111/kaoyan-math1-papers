@@ -1,6 +1,6 @@
 ---
 doc_id: ops.gpt-briefing
-doc_version: 1.0.0
+doc_version: 1.1.0
 scope: 可整份粘给 GPT 的交接与分工说明
 source_tsv_sha256: cbdf1a55989a8f60
 generated_at: 2026-08-27
