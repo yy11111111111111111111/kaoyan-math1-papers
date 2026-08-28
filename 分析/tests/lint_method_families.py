@@ -39,8 +39,12 @@ def _no_dup(loader, node, deep=False):
 DupKeyLoader.add_constructor(
     yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, _no_dup)
 
-DOC = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                   '方法族-高数-第一批.md')
+DOCS = [
+    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                 '方法族-高数-第一批.md'),
+    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                 '方法族-高数-微分方程.md'),
+]
 SCHEMA = 'CALC-METHOD-FAMILY-v1.3.1'
 
 # level_2_candidates 用中文 cell 名，route_scan_by_cell 用英文 cell_id
@@ -61,27 +65,38 @@ RESIDUE = [
 ]
 
 def load():
-    s = open(DOC, encoding='utf-8').read()
-    fm = yaml.load(s.split('---')[1], Loader=DupKeyLoader)
     fams = {}
-    for b in re.findall(r'```yaml\n(.*?)\n```', s, re.S):
-        d = yaml.load(b, Loader=DupKeyLoader)
-        if isinstance(d, dict) and 'method_family_rule' in d:
-            r = d['method_family_rule']
-            fams[r['family_id']] = r
-    return s, fm, fams
+    fm_index = {}    # family_id -> 所在文件的 frontmatter（C1/C2 按文件就近）
+    texts = []       # 每个文件的全文（语义残留扫描逐文件跑）
+    for DOC in DOCS:
+        s = open(DOC, encoding='utf-8').read()
+        texts.append(s)
+        fm = yaml.load(s.split('---')[1], Loader=DupKeyLoader)
+        for b in re.findall(r'```yaml\n(.*?)\n```', s, re.S):
+            d = yaml.load(b, Loader=DupKeyLoader)
+            if isinstance(d, dict) and 'method_family_rule' in d:
+                r = d['method_family_rule']
+                fams[r['family_id']] = r
+                fm_index[r['family_id']] = fm
+    return texts, fams, fm_index
 
 def main():
     try:
-        s, fm, fams = load()
+        texts, fams, fm_index = load()
     except yaml.constructor.ConstructorError as e:
         print(f"✘ YAML 结构错误：{e.problem} @ {e.problem_mark}")
         print("\nFAIL：error 1 · warning 0")
         return 1
     err, warn = [], []
 
-    if fm['schema_version'] != SCHEMA:
-        err.append(f"frontmatter schema_version={fm['schema_version']}，应为 {SCHEMA}")
+    # 每个文件的 frontmatter 都要声明 schema 版本
+    checked_fms = set()
+    for _fm in fm_index.values():
+        if id(_fm) in checked_fms:
+            continue
+        checked_fms.add(id(_fm))
+        if _fm['schema_version'] != SCHEMA:
+            err.append(f"frontmatter schema_version={_fm['schema_version']}，应为 {SCHEMA}")
 
     for fid, r in fams.items():
         if r.get('schema_version') != SCHEMA:
@@ -90,7 +105,8 @@ def main():
             err.append(f"{fid}: pedagogical_validation 非 untested")
         if r['status'] == 'challenged' and r.get('teaching_use') != 'quarantine':
             err.append(f"{fid}: challenged 但未 quarantine")
-        # C1: frontmatter 摘要与正文状态一致（跨段落，不只是段内自洽）
+        # C1/C2: 用该族所在文件的 frontmatter
+        fm = fm_index[fid]
         declared = (fm.get('status_summary') or {}).get(fid)
         if declared != r['status']:
             err.append(f"{fid}: frontmatter status_summary={declared!r}，正文 status={r['status']!r}（C1）")
@@ -164,10 +180,11 @@ def main():
     CITATION = re.compile(
         r'过强|更正|不得写成|被推翻|被证伪|v3\.2 写|v3\.2 的|v3\.2 中|表述|'
         r'reason:|target:|- "|误判|是错的|缺口')
-    for i, ln in enumerate(s.split('\n'), 1):
-        for pat, why in RESIDUE:
-            if re.search(pat, ln) and not CITATION.search(ln):
-                err.append(f"L{i}: 语义残留「{why}」→ {ln.strip()[:60]}")
+    for _s in texts:
+        for i, ln in enumerate(_s.split('\n'), 1):
+            for pat, why in RESIDUE:
+                if re.search(pat, ln) and not CITATION.search(ln):
+                    err.append(f"L{i}: 语义残留「{why}」→ {ln.strip()[:60]}")
 
     for e in err:  print("✘", e)
     for w in sorted(set(warn)): print("⚠", w)
