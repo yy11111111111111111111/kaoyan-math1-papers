@@ -211,7 +211,8 @@ batch2_plan:
     - { id: calc.series.route-selection,   file: 分析/方法族-高数-级数.md,     scope_problems: 29, owner: claude-series, status: delivered_candidate, note: "v1.1.0 经 SB-4 扩写为 29（27 + 2010-3/2016-1）；独立审查 0 blocker，status 保持 candidate（见 分析/审查/claude-audit-series-ee3605c.md）" }
 batch3_plan:
   batch_id: calc.method-families.batch3
-  lifecycle: open
+  lifecycle: all_families_built     # 五族全部建成；均为 candidate，均未独立审查
+  completed_at: 2026-08-28
   goal: 补完高数剩余 101 题，使高数主考点全覆盖
   rule: 每族独立文件；scope 由**本清单逐题定义**（新规矩，不再用关键词计数）
   measured_at: 2026-08-28
@@ -243,6 +244,21 @@ batch3_plan:
         「认公式 → 代入算」的路由结构，故合并，族名含「场量」。
   out_of_scope:
     - { id: 2007-21, reason: 主考点「齐次与非齐次方程组的公共解」属线性代数 }
+
+高数覆盖收口:
+  measured_at: 2026-08-28
+  method: 集合直接计算（非关键词相减）
+  高数题总数: 282
+  batch3_五族: 101   # 权威清单，逐题列于 batch3_plan
+  其余: 181          # 主考点全部落在 batch1 三族 + ODE + 级数 + 多元
+  不重叠: true       # batch3 清单 ∩ 其余 = ∅，且 batch3 ⊆ 高数
+  结论: 高数 282 题的主考点已全部有族归属
+  caveat: >
+    「有族归属」≠「已被验证」。九个高数族中：
+    batch1 三族已 CLOSED（limit partially_verified、vector/extrema candidate）；
+    ODE / 级数 / 多元 为 candidate 且经过独立审查；
+    **batch3 五族均为 candidate 且均未经独立审查**——建族方同时是 integrator，
+    独立性弱。这是当前最大的结构性缺口。
 
   scope_boundary_rule:
     decided_at: 2026-08-28

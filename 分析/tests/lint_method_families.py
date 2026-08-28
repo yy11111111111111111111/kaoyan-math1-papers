@@ -56,6 +56,8 @@ DOCS = [
     os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                  '方法族-高数-中值定理与证明.md'),
     os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                 '方法族-高数-空间解析几何与场量.md'),
+    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                  '方法族-高数-多元微分.md'),
 ]
 SCHEMA = 'CALC-METHOD-FAMILY-v1.3.1'
