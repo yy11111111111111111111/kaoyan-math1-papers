@@ -8,7 +8,7 @@ frontmatter 为准。
 ```yaml
 repository: yy11111111111111111111/kaoyan-math1-papers
 branch: claude/postgraduate-math-exam-analysis-czoi3t
-head: PENDING_PUSH      # 每次 push 后必须更新本字段
+head: b6a29ef            # 每次 push 后必须更新本字段
 
 active_batch: calc.method-families.batch1
 artifact: 分析/方法族-高数-第一批.md
