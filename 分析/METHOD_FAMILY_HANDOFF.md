@@ -206,30 +206,50 @@ batch2_plan:
   lifecycle: open
   rule: 每个新 family 写入**独立文件**，不改 batch1 的 artifact
   families:
-    - { id: calc.ode.route-selection,      file: 分析/方法族-高数-微分方程.md, scope_problems: 34, planned: 40, owner: DeepSeek, status: delivered_candidate, note: "计划 40 实测 34（31 核心 + 3 级数-ODE 边界），差异由 DeepSeek 如实上报，未虚增" }
-    - { id: calc.multivar.route-selection, file: 分析/方法族-高数-多元微分.md, scope_problems: 39, owner: codex,  status: assigned }
-    - { id: calc.series.route-selection,   file: 分析/方法族-高数-级数.md,     scope_problems: 33, owner: claude-series, status: assigned }
+    - { id: calc.ode.route-selection,      file: 分析/方法族-高数-微分方程.md, scope_problems: 28, planned: 40, owner: DeepSeek, status: delivered_candidate, note: "计划 40 实测 34（31 核心 + 3 级数-ODE 边界），差异由 DeepSeek 如实上报，未虚增" }
+    - { id: calc.multivar.route-selection, file: 分析/方法族-高数-多元微分.md, scope_problems: 39, owner: codex, status: assigned }
+    - { id: calc.series.route-selection,   file: 分析/方法族-高数-级数.md,     scope_problems: 27, owner: claude-series, status: delivered_candidate }
   scope_boundary_rule:
     decided_at: 2026-08-28
+    revised_at: 2026-08-28   # 三条 scope_problems 全部修正，见 correction 段
     decided_by: claude-code-remote（integrator）
-    basis: 按 考点标注.tsv 实测，不是估计
     rule: >
-      **一道题归属于其「主考点」所在的族**（TSV 每行 考点 列的第一个）。
-      次考点跨族不改变归属，也不允许第二个族把它算进自己的 scope_problems。
-    measured:
-      series_vs_multivar_overlap: 0      # 实测为 0；先前「幂级数展开求高阶导会撞车」的担心不成立
-      series_vs_limit: 2                 # 2014-19、2019-3 两题次考点跨 limit
-      multivar_vs_extrema: 9             # 真正的重叠在这里，不在级数
-    bindings:
-      - "2014-19 / 2019-3：主考点分别为「夹逼准则求极限」「级数敛散性的判定与反例」——
-         前者归 limit（已冻结，不动），后者归级数族。级数族**不得**认领 2014-19。"
-      - "多元关键词命中 48 题，其中 9 题主考点为极值/最值，**已属 calc.extrema
-         .constraint-selection（已冻结）**。多元微分族可认领 39 题，
-         **不得重新认领那 9 题**——那会造成两个族对同一题给出竞争路由，
-         且 extrema 已冻结，无法配合调整。"
+      **一道题归属于其「主考点」所在的族**（TSV 考点列的**第一个**）。
+      次考点跨族不改变归属，也不允许第二个族把它计入 scope_problems。
+    measured_by_main_tag:      # 按上述规则逐行实测，非关键词命中
+      calc.series.route-selection:   27
+      calc.multivar.route-selection: 39
+      calc.ode.route-selection:      28
+    correction: >
+      **此前给出的 33（级数）/ 38（多元）/ 34（微分方程）都是错的。**
+      33 与 34 用的是「任一考点列命中关键词」口径——那正是本规则明令禁止用于
+      scope_problems 的口径；38 是看板与 batch2_plan 未同步。
+      claude-series 与 codex 各自独立发现并拒绝自行对齐，处理正确。
+    rulings:
+      - id: SB-1
+        question: 2006-18 / 2014-17 / 2025-18 / 2026-18 归 ODE 还是多元？
+        ruling: >
+          **归多元族。**四题主考点均为「多元复合函数的二阶偏导数」，
+          实测**不在** ODE 的主考点集合内。ODE 族把它们计进自己的 34 题是越界，
+          其真实 scope 为 28。codex 判定正确。
+      - id: SB-2
+        question: 多元族题数 38（看板）还是 39（batch2_plan）？
+        ruling: "**39。**实测即 39；看板的 38 是我方笔误，已改。"
+      - id: SB-3
+        question: 级数族 scope 33 还是 27？
+        ruling: "**27。**claude-series 的逐行核对正确，33 是我方用错口径。"
+      - id: SB-4
+        question: 2010-3 / 2016-1（主考点「反常积分的敛散性判别」）归哪个族？
+        ruling: >
+          **归级数族**，其 scope 明确扩写为「级数与反常积分的敛散性判别」。
+          理由：二者的判别机制同源（与 ∫1/x^p 或 Σ1/n^p 比阶、比较判别法、
+          绝对收敛概念），claude-series 自己也指出与本族 P1 同源；
+          为 2 道题单开一族不划算。**这两题已计入上述 27。**
+          ⚠️ 注意方向相反：瑕点处 p<1 收敛、无穷端 p>1 收敛。
     on_dispute: >
-      若某族认为某题的主考点标错了，**不要自行改归属**：写进报告的 open_questions，
+      若某族认为某题主考点标错了，**不要自行改归属**：写进报告的 open_questions，
       由 integrator 裁定。TSV 是人工标注层，改它会影响全部下游统计。
+
   cross_review_rule: >
     谁建的 family 不审自己的。每个新 family 交付后必须由**另一个** agent 独立审。
     calc.ode.route-selection 由 deepseek 建，**尚无人审**，已派给 codex。
