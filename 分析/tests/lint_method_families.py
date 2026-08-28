@@ -5,6 +5,8 @@
   S1  terminal_when 必须存在（执行顺序里第 3 步要有东西可求值）
   S2  optional_any_of 必须带 on_skip（堵「静默漏解」）
   S3  followup 项必须标 kind: action_ref | local_operation（未标 = 待迁移）
+  T1  terminal_policy: never_terminal 的 action 不得有非空 terminal_when
+      （防止「局部子任务完成」在 S1 的 terminal 语义下被误读成「整题完成」）
   V   废弃字段 invokes / requires_followup 不得残留
   E   evidence 索引与正文 witness 一致；不得有 pending witness
   P   三族 pedagogical_validation 必须 untested
@@ -57,6 +59,9 @@ def main():
             if 'terminal_when' not in a: err.append(f"{aid}: 缺 terminal_when（S1）")
             for dead in ('invokes', 'requires_followup'):
                 if dead in a: err.append(f"{aid}: 残留 v1.3 已废弃字段 {dead}")
+            # T1: terminal_policy: never_terminal 的 action 不得有非空 terminal_when
+            if a.get('terminal_policy') == 'never_terminal' and a.get('terminal_when'):
+                err.append(f"{aid}: terminal_policy=never_terminal 却有非空 terminal_when（T1）")
             f = a.get('followup_actions')
             if isinstance(f, dict):
                 if f.get('mode') == 'optional_any_of' and 'on_skip' not in f:
