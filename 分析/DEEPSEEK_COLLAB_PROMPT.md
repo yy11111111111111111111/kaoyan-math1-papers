@@ -267,14 +267,28 @@ HANDOFF 更新 head 字段
 ## 10. 当前任务上下文（写作时点）
 
 ```yaml
-active_batch: calc.method-families.batch1
-active_family: calc.vector-integral.route-selection   # 唯一 active
-frozen: [calc.limit.method-selection, calc.extrema.constraint-selection]
-remaining_cells: [planar_curve_second_kind, spatial_curve_second_kind]
+batch1:
+  lifecycle: closed            # 2026-08-28
+  artifact: 分析/方法族-高数-第一批.md
+  note: 三族全部冻结，不再迭代。**你不要动这个文件。**
+
+active_batch: calc.method-families.batch2
+your_assignment:
+  family_id: calc.ode.route-selection
+  file: 分析/方法族-高数-微分方程.md     # 新文件，由你创建
+  scope_problems: 40
+  branch: 你自己的独立分支，不要推 claude/postgraduate-math-exam-analysis-czoi3t
+
 stop_rule: >
-  三格扫完即结束 Batch 1。GPT 最终审核无论判 partially_verified 还是
-  remain candidate，只要没有 direct blocker，Batch 1 都必须 CLOSED。
-  不得因为「还能更完善」继续产生新版本。
+  一个 family 的四类 direct blocker 之外的一切都是 backlog。
+  达到 11 项 completion_criteria 即交付，不因「还能更完善」继续迭代。
 ```
+
+**Batch 2 与 Batch 1 的关键差别**：Batch 2 的每个 family 写入**独立文件**，
+所以你被派到一个 family 时，你就是那个文件的**主执行者**，可以直接建、改、
+commit（在你自己的分支上）。Batch 1 的「不许改主 artifact」只约束
+`分析/方法族-高数-第一批.md`。
+
+状态权限不变：你的产出上限仍是 `candidate`，不得自行升级。
 
 **以 `METHOD_FAMILY_HANDOFF.md` 的当前内容为准**——本节可能已过时。

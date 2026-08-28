@@ -39,13 +39,13 @@ frozen:
 active_task:
   family: calc.vector-integral.route-selection
   remaining_cells: []            # 四格已全部扫完（v3.5.0）
-  state: ready_for_final_review
+  state: closed
   protocol: 见本文件「cell scan 协议」一节
 
 next_tasks:
-  - vector final review package → GPT（唯一剩余动作）
-  - GPT 判 candidate → partially_verified 或 remain candidate
-  - 无论哪一个，只要无 direct blocker，batch1 CLOSED
+  - Batch 1 已 CLOSED（2026-08-28）。用户决定不再交 GPT 审核，
+    按停止规则 vector 保持 candidate、批次关闭。
+  - 后续工作转入 Batch 2（新 family），见 batch2_plan
 
 permissions:
   upward_status_change: GPT_only      # candidate → partially_verified 等
@@ -180,8 +180,21 @@ vector_route_scan_status: complete_within_declared_universe
 global_exhaustiveness: not_established     # 常设状态，不是缺陷
 
 batch_status:
-  lifecycle: ready_for_final_review
-close_gate_unmet: [vector_final_GPT_review_recorded]
+  lifecycle: closed
+  closed_at: 2026-08-28
+  vector_final_status: candidate      # 未升级，也未降级
+```
+
+```yaml
+batch2_plan:
+  batch_id: calc.method-families.batch2
+  lifecycle: open
+  rule: 每个新 family 写入**独立文件**，不改 batch1 的 artifact
+  families:
+    - { id: calc.ode.route-selection,      file: 分析/方法族-高数-微分方程.md, scope_problems: 40, owner: DeepSeek, status: assigned }
+    - { id: calc.series.route-selection,   file: 分析/方法族-高数-级数.md,     scope_problems: 34, owner: unassigned }
+    - { id: calc.multivar.route-selection, file: 分析/方法族-高数-多元微分.md, scope_problems: 38, owner: unassigned }
+  inherited: [schema CALC-METHOD-FAMILY-v1.3.1, cell scan 八步协议, 11 项完成标准, 四类 direct blocker 定义, author_upgrade_ceiling: candidate]
 ```
 
 四格产出摘要：
