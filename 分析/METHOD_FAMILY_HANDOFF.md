@@ -206,8 +206,8 @@ batch2_plan:
   lifecycle: open
   rule: 每个新 family 写入**独立文件**，不改 batch1 的 artifact
   families:
-    - { id: calc.ode.route-selection,      file: 分析/方法族-高数-微分方程.md, scope_problems: 28, planned: 40, owner: DeepSeek, status: candidate, note: "v1.0.1 因 Codex 审计 BL-1..4 降 challenged；v1.1.0 修复经 claude 独立复核全部 confirmed_fixed，integrator 恢复 candidate（见 分析/审查/claude-revalidate-ode-fix.md）。计划 40 实测 34（31 核心 + 3 级数-ODE 边界）" }
-    - { id: calc.multivar.route-selection, file: 分析/方法族-高数-多元微分.md, scope_problems: 40, owner: claude（integrator 派出的建族 agent，batch2_plan 原记 codex）, status: delivered_candidate, note: "scope 40（39 + 2006-19 齐次函数欧拉定理，integrator 依 scope_boundary_rule 裁定归本族）；v1.0.0 已交付，lint error 0" }
+    - { id: calc.ode.route-selection,      file: 分析/方法族-高数-微分方程.md, scope_problems: 24, planned: 40, owner: DeepSeek, status: candidate, note: "v1.0.1 因 Codex 审计 BL-1..4 降 challenged；v1.1.0 修复经 claude 独立复核全部 confirmed_fixed，integrator 恢复 candidate（见 分析/审查/claude-revalidate-ode-fix.md）。scope 依 SB-6 按主考点更正为 24；文件内 §2/evidence 的 count 34（禁用口径）同步为 24 是 integrator 待办" }
+    - { id: calc.multivar.route-selection, file: 分析/方法族-高数-多元微分.md, scope_problems: 40, owner: claude（integrator 派出的建族 agent，batch2_plan 原记 codex）, status: candidate, note: "v1.0.0 经独立审查发现 1 blocker（2012-3 B2+B1，D1 误判正确选项为 (A)）降 challenged；integrator 修复（guard#4→(B)、新增 F18、计数同步）后 v1.1.0 复核 confirmed_fixed 恢复 candidate（见 分析/审查/claude-audit-multivar-ee3605c.md）；lint error 0，文件已并入 DOCS" }
     - { id: calc.series.route-selection,   file: 分析/方法族-高数-级数.md,     scope_problems: 29, owner: claude-series, status: delivered_candidate, note: "v1.1.0 经 SB-4 扩写为 29（27 + 2010-3/2016-1）；独立审查 0 blocker，status 保持 candidate（见 分析/审查/claude-audit-series-ee3605c.md）" }
   scope_boundary_rule:
     decided_at: 2026-08-28
@@ -219,12 +219,15 @@ batch2_plan:
     measured_by_main_tag:      # 按上述规则逐行实测，非关键词命中
       calc.series.route-selection:   29   # 27 主考点 + SB-4 判归 2010-3/2016-1
       calc.multivar.route-selection: 40   # 39 + SB-5 判归 2006-19（齐次函数欧拉定理）
-      calc.ode.route-selection:      28
+      calc.ode.route-selection:      24   # SB-6 更正：主考点实测 24（ODE 文件 34 为禁用口径；SB-1 所记 28 亦偏大），ODE 文件同步为 integrator 待办
     correction: >
       **此前给出的 33（级数）/ 38（多元）/ 34（微分方程）都是错的。**
       33 与 34 用的是「任一考点列命中关键词」口径——那正是本规则明令禁止用于
       scope_problems 的口径；38 是看板与 batch2_plan 未同步。
       claude-series 与 codex 各自独立发现并拒绝自行对齐，处理正确。
+      **SB-6 再更正**：微分方程主考点实测 **24**（非 SB-1 曾记的 28）。
+      SB-1 的 28 = 24 + SB-1 四题，把主考点归多元族的题又算了进来。
+      ODE 文件 §2/evidence 的 count 34 与 §2 正文同步为 24 是 integrator 待办。
     rulings:
       - id: SB-1
         question: 2006-18 / 2014-17 / 2025-18 / 2026-18 归 ODE 还是多元？
@@ -255,6 +258,15 @@ batch2_plan:
           应用」的直接内容（f(tx,ty)=t^λ f(x,y) ⇒ x f_x+y f_y=λ f），TSV 主考点即该标签，
           按 scope_boundary_rule 归属多元族。batch2_plan 的 39 是旧口径遗漏，
           正确为 40。TSV 不调整（下游统计映射由 integrator 负责）。
+      - id: SB-6
+        question: ODE 族 scope 到底是 28 还是 34？
+        ruling: >
+          **都错，正确为 24。**按主考点口径逐行实测，ODE 主考点 8 个标签合计
+          24 题（一阶线性 5 / 二阶非齐次 2 / 二阶齐次 5 / 变量代换 2 / 可分离 2 /
+          几何物理应用 1 / 欧拉 2 / 由解反推 5）。ODE 文件的 34 是「任一考点列命中
+          关键词」禁用口径；SB-1 所记 28 = 24 + SB-1 四题（主考点归多元族）也偏大。
+          特征方程重根情形 2 题（2004-21/2025-21）主考点是线代，不计入。
+          ODE 文件 §2/evidence 同步为 24 是 integrator 待办（不阻塞本批次收口）。
     on_dispute: >
       若某族认为某题主考点标错了，**不要自行改归属**：写进报告的 open_questions，
       由 integrator 裁定。TSV 是人工标注层，改它会影响全部下游统计。
@@ -266,7 +278,9 @@ batch2_plan:
     calc.series.route-selection 由 claude-series 建，已由 claude 独立审查
     （0 blocker，candidate 保持，见 分析/审查/claude-audit-series-ee3605c.md）。
     calc.multivar.route-selection 由 claude 建族 agent 建（batch2_plan 原记 codex），
-    已交付，待独立审查（审核方不得是实际建者）。
+    已由 claude 独立审查（1 blocker：2012-3 B2+B1，D1 误判正确选项为 (A)）→
+    integrator 修复（guard#4→(B)、F18、计数同步）→ 复核 confirmed_fixed，
+    v1.1.0 恢复 candidate（见 分析/审查/claude-audit-multivar-ee3605c.md）。
   inherited: [schema CALC-METHOD-FAMILY-v1.3.1, cell scan 八步协议, 11 项完成标准, 四类 direct blocker 定义, author_upgrade_ceiling: candidate]
 ```
 
