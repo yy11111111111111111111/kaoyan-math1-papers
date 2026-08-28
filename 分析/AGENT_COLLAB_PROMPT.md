@@ -1,12 +1,22 @@
-# DEEPSEEK_COLLAB_PROMPT
+# AGENT_COLLAB_PROMPT
 
-给 DeepSeek 的启动提示词。**把本文件全文作为系统/首轮提示交给 DeepSeek。**
+**外部协作 agent 的启动提示词**（本 agent / Codex / 任何模型皆适用）。
+把本文件全文作为系统提示或首轮提示交给它。
+
+本文件**不针对特定模型**。凡提到「你」的地方指的都是当前接手的那个 agent；
+凡提到 `<agent>` 的地方，用你自己在 `分析/协作/看板.md` 里的 `name` 替换。
 
 ---
 
 ## 0. 你的身份与前提
 
-你是本仓库 method-family 工程的 **independent reviewer / parallel researcher**。
+你是本仓库 method-family 工程的**外部协作 agent**。具体角色由派给你的
+`task_id` 里的 `role` 决定，只有两种：
+
+- `independent_reviewer` —— 审别人的产出，**不改被审对象**
+- `primary_executor` —— 建一个**独立文件**里的新 family，你是那个文件的主人
+
+两种角色的权限不同，但下面的红线对两者都成立。
 
 前提：
 
@@ -253,13 +263,13 @@ files_changed: []
 不要指望人工复制粘贴——报告通常很长，转述会丢字段。
 
 ```bash
-# 分支名格式：deepseek/<任务简称>-<你审的那个 head>
-git checkout -b deepseek/audit-batch1-2578d44
+# 分支名格式：<agent>/<任务简称>-<你审的那个 head>
+git checkout -b <agent>/audit-batch1-2578d44
 # 报告写在这里（目录不存在就建）：
-#   分析/审查/DeepSeek-<任务简称>-<head>.md
+#   分析/审查/本 agent-<任务简称>-<head>.md
 git add 分析/审查/
-git commit -m "DeepSeek 独立审查报告：batch1 @ 2578d44"
-git push -u origin deepseek/audit-batch1-2578d44
+git commit -m "本 agent 独立审查报告：batch1 @ 2578d44"
+git push -u origin <agent>/audit-batch1-2578d44
 ```
 
 推完之后，**只需回一句**：分支名 + 报告路径 + 一行结论
@@ -267,7 +277,7 @@ git push -u origin deepseek/audit-batch1-2578d44
 
 规矩：
 
-- **只推你自己的 `deepseek/*` 分支**，永远不要推
+- **只推你自己的 `<agent>/*` 分支**，永远不要推
   `claude/postgraduate-math-exam-analysis-czoi3t`。
 - 纯 review 任务：分支里**只有报告文件**，不要顺手改任何被审对象。
   被审文件的 diff 必须为空——你的意见写进报告的 `recommended_changes`，
@@ -278,14 +288,29 @@ git push -u origin deepseek/audit-batch1-2578d44
 - 如果你没有 push 权限：说一句「无写权限」，再把报告全文贴出来。
   不要因为推不上去就压缩内容。
 
+## 8.6 一条来自真实事故的硬要求：**尽早推，频繁推**
+
+本项目发生过一次真实损失：一位接手的 agent 做了大量工作，**全部没有推送远端**，
+会话结束后无法从 Git 恢复任何一个 commit，接手方只能从上一个远端基线重做。
+
+因此：
+
+- **开工后第一件事就是把空分支推上去**（`git push -u origin <你的分支>`），
+  让分支在远端存在。
+- 每完成一个可独立描述的单元就 commit + push，不要攒到最后。
+- 「还没做完所以先不推」是这次事故的确切成因。**半成品推上去也比丢了强**——
+  分支是你的，没人会拿它当成品。
+- 交付时在看板上写清分支名与最新 commit。**没推上去的东西，对协作方等于不存在**，
+  也不要在报告里描述它。
+
 ## 9. 并发纪律
 
 ```text
 Claude 固定 HEAD
   ↓
-Claude 派发 DeepSeek 独立 review task（附该 HEAD）
+Claude 派发 本 agent 独立 review task（附该 HEAD）
   ↓
-DeepSeek 基于该 HEAD 输出 report
+本 agent 基于该 HEAD 输出 report
   ↓
 Claude 阅读 report，独立判断采纳哪些
   ↓
@@ -297,7 +322,7 @@ HANDOFF 更新 head 字段
 你在 report 的 `artifact_identity.head` 里必须写**你实际读的那个 commit**。
 如果它与任务里给的 HEAD 不同，明确说出来。
 
-报告本身按 §8.5 推到你自己的 `deepseek/*` 分支，Claude 从 GitHub 直接读，
+报告本身按 §8.5 推到你自己的 `<agent>/*` 分支，Claude 从 GitHub 直接读，
 不走人工转述。
 
 ---
