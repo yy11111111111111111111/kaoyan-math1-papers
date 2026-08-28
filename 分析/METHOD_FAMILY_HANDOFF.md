@@ -209,6 +209,41 @@ batch2_plan:
     - { id: calc.ode.route-selection,      file: 分析/方法族-高数-微分方程.md, scope_problems: 24, planned: 40, owner: DeepSeek, status: candidate, note: "v1.0.1 因 Codex 审计 BL-1..4 降 challenged；v1.1.0 修复经 claude 独立复核全部 confirmed_fixed，integrator 恢复 candidate（见 分析/审查/claude-revalidate-ode-fix.md）。scope 依 SB-6 按主考点更正为 24；文件内 §2/evidence 的 count 34（禁用口径）同步为 24 是 integrator 待办" }
     - { id: calc.multivar.route-selection, file: 分析/方法族-高数-多元微分.md, scope_problems: 40, owner: claude（integrator 派出的建族 agent，batch2_plan 原记 codex）, status: candidate, note: "v1.0.0 经独立审查发现 1 blocker（2012-3 B2+B1，D1 误判正确选项为 (A)）降 challenged；integrator 修复（guard#4→(B)、新增 F18、计数同步）后 v1.1.0 复核 confirmed_fixed 恢复 candidate（见 分析/审查/claude-audit-multivar-ee3605c.md）；lint error 0，文件已并入 DOCS" }
     - { id: calc.series.route-selection,   file: 分析/方法族-高数-级数.md,     scope_problems: 29, owner: claude-series, status: delivered_candidate, note: "v1.1.0 经 SB-4 扩写为 29（27 + 2010-3/2016-1）；独立审查 0 blocker，status 保持 candidate（见 分析/审查/claude-audit-series-ee3605c.md）" }
+batch3_plan:
+  batch_id: calc.method-families.batch3
+  lifecycle: open
+  goal: 补完高数剩余 101 题，使高数主考点全覆盖
+  rule: 每族独立文件；scope 由**本清单逐题定义**（新规矩，不再用关键词计数）
+  measured_at: 2026-08-28
+  coverage_before: 高数 287 题中已覆盖 183（batch1 三族 + ODE + 级数 + 多元）
+  families:
+    - id: calc.diff1v.route-selection
+      file: 分析/方法族-高数-一元微分学.md
+      count: 33
+      problems: [2004-1, 2004-8, 2005-1, 2006-7, 2007-2, 2007-5, 2010-9, 2011-1, 2012-1, 2012-18, 2012-2, 2013-11, 2014-1, 2014-2, 2015-1, 2015-16, 2015-18, 2016-4, 2017-1, 2017-2, 2018-1, 2019-2, 2020-10, 2020-2, 2021-1, 2021-12, 2023-1, 2023-17, 2023-3, 2024-4, 2025-19, 2026-13, 2026-3]
+    - id: calc.int1v.route-selection
+      file: 分析/方法族-高数-一元积分学.md
+      count: 36
+      problems: [2004-2, 2005-17, 2005-8, 2007-11, 2007-3, 2008-1, 2008-18, 2009-16, 2009-3, 2010-10, 2010-16, 2010-17, 2011-19, 2011-4, 2011-9, 2012-10, 2012-4, 2013-12, 2014-10, 2014-4, 2015-10, 2016-2, 2016-9, 2017-4, 2018-10, 2018-15, 2018-4, 2019-17, 2019-18, 2021-11, 2023-14, 2024-1, 2025-1, 2025-17, 2026-14, 2026-20]
+    - id: calc.multiple-integral.route-selection
+      file: 分析/方法族-高数-重积分.md
+      count: 16
+      problems: [2004-10, 2005-15, 2006-15, 2006-8, 2009-12, 2009-2, 2010-12, 2013-15, 2014-3, 2015-12, 2015-4, 2016-15, 2019-19, 2024-17, 2025-4, 2026-4]
+    - id: calc.mvt-proof.route-selection
+      file: 分析/方法族-高数-中值定理与证明.md
+      count: 8
+      problems: [2004-18, 2005-18, 2007-19, 2011-17, 2012-15, 2017-18, 2023-20, 2024-19]
+    - id: calc.space-geometry.route-selection
+      file: 分析/方法族-高数-空间解析几何与场量.md
+      count: 8
+      problems: [2006-4, 2009-17, 2013-19, 2016-10, 2017-19, 2018-11, 2025-20, 2026-11]
+      note: >
+        含 2016-10 / 2018-11 / 2026-11「旋度与散度的计算」。它们不属 vector 族
+        （该族 objects 是四类积分），单开三题一族不划算；与解析几何同属
+        「认公式 → 代入算」的路由结构，故合并，族名含「场量」。
+  out_of_scope:
+    - { id: 2007-21, reason: 主考点「齐次与非齐次方程组的公共解」属线性代数 }
+
   scope_boundary_rule:
     decided_at: 2026-08-28
     revised_at: 2026-08-28   # 三条 scope_problems 全部修正，见 correction 段
