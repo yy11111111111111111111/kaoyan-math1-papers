@@ -7,6 +7,7 @@
   S3  followup 项必须标 kind: action_ref | local_operation（未标 = 待迁移）
   T1  terminal_policy: never_terminal 的 action 不得有非空 terminal_when
       （防止「局部子任务完成」在 S1 的 terminal 语义下被误读成「整题完成」）
+  D1  同一 YAML 映射内不得有重复键（pyyaml 会静默取最后一个，是沉默失效的错误源）
   C1  frontmatter status_summary 必须与各族正文 status 一致
   C2  freeze_status 标 frozen 的族，其正文必须有 frozen: true（反之亦然）
   V   废弃字段 invokes / requires_followup 不得残留
@@ -15,6 +16,26 @@
 另检查 GPT 点名的语义残留（正文陈述位置，排除 status_history 的引述）。
 """
 import re, sys, os, yaml
+
+
+class DupKeyLoader(yaml.SafeLoader):
+    """D1：把同一映射内的重复键从「静默取最后一个」改为报错。"""
+
+
+def _no_dup(loader, node, deep=False):
+    seen, out = set(), {}
+    for k, v in node.value:
+        key = loader.construct_object(k, deep=deep)
+        if key in seen:
+            raise yaml.constructor.ConstructorError(
+                None, None, f"重复键 {key!r}（D1）", k.start_mark)
+        seen.add(key)
+        out[key] = loader.construct_object(v, deep=deep)
+    return out
+
+
+DupKeyLoader.add_constructor(
+    yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, _no_dup)
 
 DOC = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                    '方法族-高数-第一批.md')
@@ -31,17 +52,22 @@ RESIDUE = [
 
 def load():
     s = open(DOC, encoding='utf-8').read()
-    fm = yaml.safe_load(s.split('---')[1])
+    fm = yaml.load(s.split('---')[1], Loader=DupKeyLoader)
     fams = {}
     for b in re.findall(r'```yaml\n(.*?)\n```', s, re.S):
-        d = yaml.safe_load(b)
+        d = yaml.load(b, Loader=DupKeyLoader)
         if isinstance(d, dict) and 'method_family_rule' in d:
             r = d['method_family_rule']
             fams[r['family_id']] = r
     return s, fm, fams
 
 def main():
-    s, fm, fams = load()
+    try:
+        s, fm, fams = load()
+    except yaml.constructor.ConstructorError as e:
+        print(f"✘ YAML 结构错误：{e.problem} @ {e.problem_mark}")
+        print("\nFAIL：error 1 · warning 0")
+        return 1
     err, warn = [], []
 
     if fm['schema_version'] != SCHEMA:
