@@ -243,6 +243,37 @@ files_changed: []
 
 ---
 
+## 8.5 报告交付方式：推分支，不要贴聊天
+
+**默认交付方式是 push 到你自己的分支**，让 Claude 直接从 GitHub 读，
+不要指望人工复制粘贴——报告通常很长，转述会丢字段。
+
+```bash
+# 分支名格式：deepseek/<任务简称>-<你审的那个 head>
+git checkout -b deepseek/audit-batch1-2578d44
+# 报告写在这里（目录不存在就建）：
+#   分析/审查/DeepSeek-<任务简称>-<head>.md
+git add 分析/审查/
+git commit -m "DeepSeek 独立审查报告：batch1 @ 2578d44"
+git push -u origin deepseek/audit-batch1-2578d44
+```
+
+推完之后，**只需回一句**：分支名 + 报告路径 + 一行结论
+（有无 blocker、几条）。其余让 Claude 自己去仓库读。
+
+规矩：
+
+- **只推你自己的 `deepseek/*` 分支**，永远不要推
+  `claude/postgraduate-math-exam-analysis-czoi3t`。
+- 纯 review 任务：分支里**只有报告文件**，不要顺手改任何被审对象。
+  被审文件的 diff 必须为空——你的意见写进报告的 `recommended_changes`，
+  由 Claude 决定采纳与否。
+- 报告文件写在 `分析/审查/` 下（`分析/` 之外一律不许写，见 CLAUDE.md）。
+- 报告正文用 §8 的固定 YAML 结构；`files_changed` 填你**在自己分支上新建的
+  报告文件**，被审对象仍应为空。
+- 如果你没有 push 权限：说一句「无写权限」，再把报告全文贴出来。
+  不要因为推不上去就压缩内容。
+
 ## 9. 并发纪律
 
 ```text
@@ -261,6 +292,9 @@ HANDOFF 更新 head 字段
 
 你在 report 的 `artifact_identity.head` 里必须写**你实际读的那个 commit**。
 如果它与任务里给的 HEAD 不同，明确说出来。
+
+报告本身按 §8.5 推到你自己的 `deepseek/*` 分支，Claude 从 GitHub 直接读，
+不走人工转述。
 
 ---
 
