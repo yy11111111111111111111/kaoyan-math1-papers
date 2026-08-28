@@ -327,20 +327,32 @@ HANDOFF 更新 head 字段
 
 ---
 
-## 10. 当前任务上下文（写作时点）
+## 10. 当前任务上下文
+
+**本节不写具体派工。**派工只有一个权威来源：
+`分析/METHOD_FAMILY_HANDOFF.md` 的 `batch2_plan`（谁建哪个 family、
+题数、owner、status）与 `scope_boundary_rule`（题目归属）。
+本文件曾经内联过一份 `your_assignment`，结果是每换一个 agent 就残留一次
+过时派工——那正是本节现在不写派工的原因。
 
 ```yaml
 batch1:
-  lifecycle: closed            # 2026-08-28
+  lifecycle: closed
   artifact: 分析/方法族-高数-第一批.md
-  note: 三族全部冻结，不再迭代。**你不要动这个文件。**
+  note: >
+    **你不要动这个文件。**
+    注意：closed 指批次不再迭代，**不等于三族都冻结**。
+    limit 与 extrema 是 frozen，vector 是 active——
+    以该文件 frontmatter 的 freeze_status 为准，不要凭本行推断。
 
 active_batch: calc.method-families.batch2
-your_assignment:
-  family_id: calc.ode.route-selection
-  file: 分析/方法族-高数-微分方程.md     # 新文件，由你创建
-  scope_problems: 40
-  branch: 你自己的独立分支，不要推 claude/postgraduate-math-exam-analysis-czoi3t
+your_assignment: 见 METHOD_FAMILY_HANDOFF.md 的 batch2_plan，按你的 owner 名取
+your_branch: >
+  用你自己的独立分支。**云端会话的分支名由 harness 分配**，可能与看板上
+  预写的名字不同（如 claude/series-family-construction-xxxxxx）。
+  这不是 inconsistency：以 `git rev-parse --abbrev-ref HEAD` 现取为准，
+  并把**实际分支名**写回看板你那一行。
+  唯一的硬约束是：不要推 claude/postgraduate-math-exam-analysis-czoi3t。
 
 stop_rule: >
   一个 family 的四类 direct blocker 之外的一切都是 backlog。
@@ -353,5 +365,3 @@ commit（在你自己的分支上）。Batch 1 的「不许改主 artifact」只
 `分析/方法族-高数-第一批.md`。
 
 状态权限不变：你的产出上限仍是 `candidate`，不得自行升级。
-
-**以 `METHOD_FAMILY_HANDOFF.md` 的当前内容为准**——本节可能已过时。
