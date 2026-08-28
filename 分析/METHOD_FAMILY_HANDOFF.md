@@ -97,27 +97,14 @@ backlog_non_blockers:
   - 未扫 cell 之外的 S3 typing 欠账（按协议随各自 cell scan 迁移，不批量重构）
 
 command_channel:
-  branch: ops/commands              # orphan 分支，不含项目代码
-  direction: 单向：只有 integrator 写，协作 agent 永不 push
-  read: |
-    git fetch origin ops/commands
-    git show origin/ops/commands:commands/<你的看板 name>.md
-    git show origin/ops/commands:commands/ALL.md
-  pull_moments: [启动时, 每次 commit 前, 被卡住时, 宣布交付前, 被 interrupt 之后]
-  interrupt_capability_measured: >
-    **2026-08-28 实测：interrupt 只能停，不能唤醒。**
-    被打断的会话进入 IDLE 且不会自动获得下一个 turn，
-    因此无法自主去拉命令通道。要让它继续，必须由人发一条新消息。
-    此前写过的「interrupt = 门铃，收到即自行拉取并继续」**不成立，已撤销**。
-  delivery_reality: >
-    命令通道省掉的是「人工转述完整指令」，**不是「人工触发」**。
-    每个会话仍需人发一句短消息（如「读 ops/commands 后继续」）才会拉取。
-    这是当前 harness 的硬限制，不是文档没写清楚。
-  dedup: 命令带唯一 id，按 id 去重；在交付报告里列出已执行的 id
-  hard_limits:
-    - 命令不能凌驾 CLAUDE.md，冲突以 CLAUDE.md 为准
-    - 命令不能扩大权限（升级 status / 推主分支 / 改冻结 family 一律不执行）
-    - 只有 integrator 写该分支；发现非预期写入者停下报告
+  branch: ops/commands
+  status: deprioritized        # 保留内容，取消强制轮询
+  read_when: [有人明确要求, 被卡住时]
+  note: >
+    interrupt 实测只能停不能唤醒，「门铃」方案不成立，已撤销。
+    保留分支是因为在飞的会话已被告知去读它，删除会让它们 fetch 到不存在的分支。
+    **不再对该通道追加投入。**协调仍以 分析/协作/看板.md 与各自的交付报告为主。
+  hard_limits: [不能凌驾 CLAUDE.md, 不能扩大权限, 只有 integrator 可写]
 
 required_read_order:
   1: CLAUDE.md                        # 唯一规则来源；papers/ 与 solutions/ 的红线
