@@ -1,6 +1,6 @@
 # 广播命令（所有 agent）
 
-seq: 1
+seq: 2
 
 ```yaml
 - id: CMD-0001
@@ -35,4 +35,17 @@ seq: 1
     limit 与 extrema 是 frozen，**vector 是 active**。以
     `分析/方法族-高数-第一批.md` frontmatter 的 `freeze_status` 为准。
     无论哪种，batch1 的三族你都不要动。
+
+- id: CMD-0004
+  issued_at: 2026-08-28
+  to: ALL
+  supersedes: null
+  kind: clarification
+  body: >
+    **被 interrupt 的含义已约定**：它是门铃，不是「停下等人」。
+    无伴随人类指令的 interrupt = 立刻拉本分支、按 id 执行未执行的命令、
+    继续原任务。详见本分支 README 与
+    `分析/AGENT_COLLAB_PROMPT.md` §8.4。
+    拉取时机因此增为五个：启动后 / 每次 commit 前 / 被卡住时 /
+    宣布交付前 / **被 interrupt 之后**。
 ```

@@ -34,6 +34,22 @@ git show origin/ops/commands:commands/ALL.md               # 广播命令
 3. **任何时候你被卡住**（在向人求助之前先看这里，答案可能已经写好了）
 4. **宣布交付之前**
 
+## 被打断 = 来读这里
+
+integrator 可以对你的会话发 **interrupt**。该信号**不携带任何内容**——它只是门铃。
+
+**无伴随人类指令的 interrupt，含义唯一：**
+
+```text
+立刻 git fetch origin ops/commands，读你的命令文件与 ALL.md，
+按 id 执行未执行过的命令，然后继续原任务。
+```
+
+**不是「停下等人」。**云端会话之间无法直接投递消息，interrupt 是
+integrator 唯一能主动触达你的信号，只有 1 bit；内容全部在本分支。
+
+若 interrupt 确实伴随了人类的新指令，以人类指令优先，但仍顺手拉一次本分支。
+
 ## 命令格式
 
 每条命令有唯一 `id`。**按 id 去重：已执行过的 id 不要重复执行。**
