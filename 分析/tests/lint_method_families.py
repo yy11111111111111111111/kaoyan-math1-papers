@@ -9,6 +9,7 @@
       （防止「局部子任务完成」在 S1 的 terminal 语义下被误读成「整题完成」）
   R1  followup 的 action_ref 必须指向本 family 内真实存在的 action（B4 类）
   R2  action 的 eligible_cells 必须与 level_2_candidates 的 cell 清单双向一致（B4 类）
+  U1  family_id 不得在多个文件中重复定义（多文件加载会静默覆盖）
   D1  同一 YAML 映射内不得有重复键（pyyaml 会静默取最后一个，是沉默失效的错误源）
   C1  frontmatter status_summary 必须与各族正文 status 一致
   C2  freeze_status 标 frozen 的族，其正文必须有 frozen: true（反之亦然）
@@ -76,15 +77,27 @@ def load():
             d = yaml.load(b, Loader=DupKeyLoader)
             if isinstance(d, dict) and 'method_family_rule' in d:
                 r = d['method_family_rule']
-                fams[r['family_id']] = r
-                fm_index[r['family_id']] = fm
+                fid = r['family_id']
+                if fid in fams:      # U1：跨文件重名会被静默覆盖，与 D1 同类
+                    raise ValueError(f"family_id {fid!r} 在多个文件中重复定义（U1）")
+                fams[fid] = r
+                fm_index[fid] = fm
     return texts, fams, fm_index
 
 def main():
+    # Windows 控制台默认 cp1252，⚠/✘ 会让脚本崩在输出上（外部 reviewer 实测遇到）
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
     try:
         texts, fams, fm_index = load()
     except yaml.constructor.ConstructorError as e:
         print(f"✘ YAML 结构错误：{e.problem} @ {e.problem_mark}")
+        print("\nFAIL：error 1 · warning 0")
+        return 1
+    except ValueError as e:
+        print(f"✘ {e}")
         print("\nFAIL：error 1 · warning 0")
         return 1
     err, warn = [], []

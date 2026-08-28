@@ -8,7 +8,7 @@ frontmatter 为准。
 ```yaml
 repository: yy11111111111111111111/kaoyan-math1-papers
 branch: claude/postgraduate-math-exam-analysis-czoi3t
-head_at_last_content_commit: 20fd6e5
+head_at_last_content_commit: 见分支 tip（本轮合入两个 deepseek 分支后已前移）
 # ↑ 指「最近一次改动内容的提交」，不是分支 tip。
 #   一个文件无法引用包含它自身修改的那个 commit，硬要对齐就得每次追加一个
 #   回填提交，而回填提交本身又让字段落后一位——此前几轮正是这样漂移的。
@@ -196,7 +196,7 @@ batch2_plan:
   lifecycle: open
   rule: 每个新 family 写入**独立文件**，不改 batch1 的 artifact
   families:
-    - { id: calc.ode.route-selection,      file: 分析/方法族-高数-微分方程.md, scope_problems: 40, owner: DeepSeek, status: assigned }
+    - { id: calc.ode.route-selection,      file: 分析/方法族-高数-微分方程.md, scope_problems: 34, planned: 40, owner: DeepSeek, status: delivered_candidate, note: "计划 40 实测 34（31 核心 + 3 级数-ODE 边界），差异由 DeepSeek 如实上报，未虚增" }
     - { id: calc.series.route-selection,   file: 分析/方法族-高数-级数.md,     scope_problems: 34, owner: unassigned }
     - { id: calc.multivar.route-selection, file: 分析/方法族-高数-多元微分.md, scope_problems: 38, owner: unassigned }
   inherited: [schema CALC-METHOD-FAMILY-v1.3.1, cell scan 八步协议, 11 项完成标准, 四类 direct blocker 定义, author_upgrade_ceiling: candidate]
