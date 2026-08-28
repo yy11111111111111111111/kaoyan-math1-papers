@@ -35,7 +35,7 @@
 ```yaml
 recovered_state:
   branch:
-  head:
+  head:            # 现取 `git rev-parse --short HEAD`，不要抄 HANDOFF 的字段
   active_batch:
   active_family:
   active_cell:

@@ -8,7 +8,11 @@ frontmatter 为准。
 ```yaml
 repository: yy11111111111111111111/kaoyan-math1-papers
 branch: claude/postgraduate-math-exam-analysis-czoi3t
-head: 20fd6e5            # 每次 push 后必须更新本字段
+head_at_last_content_commit: 20fd6e5
+# ↑ 指「最近一次改动内容的提交」，不是分支 tip。
+#   一个文件无法引用包含它自身修改的那个 commit，硬要对齐就得每次追加一个
+#   回填提交，而回填提交本身又让字段落后一位——此前几轮正是这样漂移的。
+#   分支 tip 请用 `git rev-parse --short HEAD` 现取，不要以本字段为准。
 
 active_batch: calc.method-families.batch1
 artifact: 分析/方法族-高数-第一批.md
