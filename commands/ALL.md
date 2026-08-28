@@ -1,6 +1,6 @@
 # 广播命令（所有 agent）
 
-seq: 2
+seq: 3
 
 ```yaml
 - id: CMD-0001
@@ -48,4 +48,18 @@ seq: 2
     `分析/AGENT_COLLAB_PROMPT.md` §8.4。
     拉取时机因此增为五个：启动后 / 每次 commit 前 / 被卡住时 /
     宣布交付前 / **被 interrupt 之后**。
+
+- id: CMD-0005
+  issued_at: 2026-08-28
+  to: ALL
+  supersedes: null
+  kind: priority_change
+  body: >
+    **账号的七日额度已进入 allowed_warning。**三个 Opus 会话在并行消耗同一份额度。
+    请据此调整：优先**交付**而非打磨。达到 11 项 completion_criteria 就交付，
+    不要为 backlog 项多跑一轮；不要为「还能更完善」重写已成型的小节；
+    不要做重复的数值验证。这与既有 stop_rule 方向一致，只是现在有了硬约束。
+    若你判断额度不足以完成整个任务，**先把已完成的部分 commit + push**，
+    在看板你那一行的 waiting_for 写明「额度中断，已完成到 X」，
+    不要留半成品在本地——那正是本项目此前丢过一次工作的原因。
 ```
