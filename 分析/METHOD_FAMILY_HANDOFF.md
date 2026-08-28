@@ -101,7 +101,8 @@ required_read_order:
   2: 分析/METHOD_FAMILY_HANDOFF.md    # 本文件
   3: 分析/10_高等数学_资料与覆盖索引.md  # claim labeling 四字段、状态权限表
   4: 分析/方法族-高数-第一批.md         # artifact 本体；frontmatter 为状态权威
-  5: 分析/tests/README.md
+  5: 分析/协作/看板.md              # 跨机器协调总线；开工前读，收工后更新自己那一行
+  5.1: 分析/tests/README.md
   6: 分析/tests/lint_method_families.py
 
 do_not_before_batch1_closed:
