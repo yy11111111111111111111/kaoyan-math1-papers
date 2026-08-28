@@ -7,6 +7,8 @@
   S3  followup 项必须标 kind: action_ref | local_operation（未标 = 待迁移）
   T1  terminal_policy: never_terminal 的 action 不得有非空 terminal_when
       （防止「局部子任务完成」在 S1 的 terminal 语义下被误读成「整题完成」）
+  R1  followup 的 action_ref 必须指向本 family 内真实存在的 action（B4 类）
+  R2  action 的 eligible_cells 必须与 level_2_candidates 的 cell 清单双向一致（B4 类）
   D1  同一 YAML 映射内不得有重复键（pyyaml 会静默取最后一个，是沉默失效的错误源）
   C1  frontmatter status_summary 必须与各族正文 status 一致
   C2  freeze_status 标 frozen 的族，其正文必须有 frozen: true（反之亦然）
@@ -40,6 +42,14 @@ DupKeyLoader.add_constructor(
 DOC = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                    '方法族-高数-第一批.md')
 SCHEMA = 'CALC-METHOD-FAMILY-v1.3.1'
+
+# level_2_candidates 用中文 cell 名，route_scan_by_cell 用英文 cell_id
+CELL_ALIAS = {
+    '平面 · 曲线 · 第二类': 'planar_curve_second_kind',
+    '空间 · 曲线 · 第二类': 'spatial_curve_second_kind',
+    '曲面 · 第二类':        'surface_second_kind',
+    '曲线或曲面 · 第一类':  'first_kind',
+}
 
 # GPT v3.2 full-file audit 点名的措辞；只允许出现在 status_history 的引述里
 RESIDUE = [
@@ -105,6 +115,38 @@ def main():
                 for it in f.get('actions', []):
                     if not (isinstance(it, dict) and 'kind' in it):
                         warn.append(f"{aid}: followup 项未标 kind，待迁移（S3）")
+
+        # R1: action_ref 可解析
+        ids = {a['action_id'] for a in r['candidate_actions']}
+        for a in r['candidate_actions']:
+            f = a.get('followup_actions')
+            if not isinstance(f, dict):
+                continue
+            for it in f.get('actions', []):
+                if isinstance(it, dict) and it.get('kind') == 'action_ref':
+                    tgt = it.get('action')
+                    if tgt not in ids:
+                        err.append(f"{fid}/{a['action_id']}: action_ref 指向不存在的 {tgt!r}（R1）")
+
+        # R2: eligible_cells 与 level_2_candidates 清单双向一致
+        cells = {}
+        for c in r.get('level_2_candidates') or []:
+            key = c.get('cell_id') or CELL_ALIAS.get(c.get('cell'))
+            if key:
+                cells[key] = set(c['actions'])
+        if cells:
+            for a in r['candidate_actions']:
+                ec = a.get('eligible_cells')
+                if ec is None:
+                    continue          # 未声明者豁免（已知限制，记 backlog）
+                aid = a['action_id']
+                unknown = [c for c in ec if c not in cells]
+                if unknown:
+                    err.append(f"{fid}/{aid}: eligible_cells 含未知 cell {unknown}（R2）")
+                # 已声明者必须**完全**等于实际列出它的 cell 集合，不允许只声明一部分
+                actual = {c for c, acts in cells.items() if aid in acts}
+                if set(ec) - set(unknown) != actual:
+                    err.append(f"{fid}/{aid}: eligible_cells={sorted(ec)} 与清单实际 {sorted(actual)} 不一致（R2）")
 
         fb = r['failure_boundaries']
         pend = [x['boundary_id'] for x in fb
