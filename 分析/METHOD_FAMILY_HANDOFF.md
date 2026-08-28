@@ -197,8 +197,29 @@ batch2_plan:
   rule: 每个新 family 写入**独立文件**，不改 batch1 的 artifact
   families:
     - { id: calc.ode.route-selection,      file: 分析/方法族-高数-微分方程.md, scope_problems: 34, planned: 40, owner: DeepSeek, status: delivered_candidate, note: "计划 40 实测 34（31 核心 + 3 级数-ODE 边界），差异由 DeepSeek 如实上报，未虚增" }
-    - { id: calc.multivar.route-selection, file: 分析/方法族-高数-多元微分.md, scope_problems: 38, owner: codex, status: assigned }
-    - { id: calc.series.route-selection,   file: 分析/方法族-高数-级数.md,     scope_problems: 34, owner: unassigned, note: "与多元微分有边界重叠（幂级数展开求高阶导），派发时须先划清归属" }
+    - { id: calc.multivar.route-selection, file: 分析/方法族-高数-多元微分.md, scope_problems: 39, owner: codex,  status: assigned }
+    - { id: calc.series.route-selection,   file: 分析/方法族-高数-级数.md,     scope_problems: 33, owner: claude-series, status: assigned }
+  scope_boundary_rule:
+    decided_at: 2026-08-28
+    decided_by: claude-code-remote（integrator）
+    basis: 按 考点标注.tsv 实测，不是估计
+    rule: >
+      **一道题归属于其「主考点」所在的族**（TSV 每行 考点 列的第一个）。
+      次考点跨族不改变归属，也不允许第二个族把它算进自己的 scope_problems。
+    measured:
+      series_vs_multivar_overlap: 0      # 实测为 0；先前「幂级数展开求高阶导会撞车」的担心不成立
+      series_vs_limit: 2                 # 2014-19、2019-3 两题次考点跨 limit
+      multivar_vs_extrema: 9             # 真正的重叠在这里，不在级数
+    bindings:
+      - "2014-19 / 2019-3：主考点分别为「夹逼准则求极限」「级数敛散性的判定与反例」——
+         前者归 limit（已冻结，不动），后者归级数族。级数族**不得**认领 2014-19。"
+      - "多元关键词命中 48 题，其中 9 题主考点为极值/最值，**已属 calc.extrema
+         .constraint-selection（已冻结）**。多元微分族可认领 39 题，
+         **不得重新认领那 9 题**——那会造成两个族对同一题给出竞争路由，
+         且 extrema 已冻结，无法配合调整。"
+    on_dispute: >
+      若某族认为某题的主考点标错了，**不要自行改归属**：写进报告的 open_questions，
+      由 integrator 裁定。TSV 是人工标注层，改它会影响全部下游统计。
   cross_review_rule: >
     谁建的 family 不审自己的。每个新 family 交付后必须由**另一个** agent 独立审。
     calc.ode.route-selection 由 deepseek 建，**尚无人审**，已派给 codex。
