@@ -7,6 +7,8 @@
   S3  followup 项必须标 kind: action_ref | local_operation（未标 = 待迁移）
   T1  terminal_policy: never_terminal 的 action 不得有非空 terminal_when
       （防止「局部子任务完成」在 S1 的 terminal 语义下被误读成「整题完成」）
+  C1  frontmatter status_summary 必须与各族正文 status 一致
+  C2  freeze_status 标 frozen 的族，其正文必须有 frozen: true（反之亦然）
   V   废弃字段 invokes / requires_followup 不得残留
   E   evidence 索引与正文 witness 一致；不得有 pending witness
   P   三族 pedagogical_validation 必须 untested
@@ -52,6 +54,14 @@ def main():
             err.append(f"{fid}: pedagogical_validation 非 untested")
         if r['status'] == 'challenged' and r.get('teaching_use') != 'quarantine':
             err.append(f"{fid}: challenged 但未 quarantine")
+        # C1: frontmatter 摘要与正文状态一致（跨段落，不只是段内自洽）
+        declared = (fm.get('status_summary') or {}).get(fid)
+        if declared != r['status']:
+            err.append(f"{fid}: frontmatter status_summary={declared!r}，正文 status={r['status']!r}（C1）")
+        # C2: 冻结标记双向一致
+        frozen_fm = (fm.get('freeze_status') or {}).get(fid) == 'frozen'
+        if frozen_fm != bool(r.get('frozen')):
+            err.append(f"{fid}: freeze_status 与正文 frozen 不一致（C2）")
 
         for a in r['candidate_actions']:
             aid = f"{fid}/{a['action_id']}"
