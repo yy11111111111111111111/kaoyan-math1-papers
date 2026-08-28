@@ -104,11 +104,15 @@ command_channel:
     git show origin/ops/commands:commands/<你的看板 name>.md
     git show origin/ops/commands:commands/ALL.md
   pull_moments: [启动时, 每次 commit 前, 被卡住时, 宣布交付前, 被 interrupt 之后]
-  interrupt_convention: >
-    integrator 可对会话发 interrupt。该信号**不携带内容**，只是门铃。
-    无伴随人类指令的 interrupt，含义唯一：立刻拉命令通道、执行未执行的命令、
-    继续原任务——**不是「停下等人」**。
-    若 interrupt 伴随了人类新指令，以人类指令优先，但仍顺手拉一次命令通道。
+  interrupt_capability_measured: >
+    **2026-08-28 实测：interrupt 只能停，不能唤醒。**
+    被打断的会话进入 IDLE 且不会自动获得下一个 turn，
+    因此无法自主去拉命令通道。要让它继续，必须由人发一条新消息。
+    此前写过的「interrupt = 门铃，收到即自行拉取并继续」**不成立，已撤销**。
+  delivery_reality: >
+    命令通道省掉的是「人工转述完整指令」，**不是「人工触发」**。
+    每个会话仍需人发一句短消息（如「读 ops/commands 后继续」）才会拉取。
+    这是当前 harness 的硬限制，不是文档没写清楚。
   dedup: 命令带唯一 id，按 id 去重；在交付报告里列出已执行的 id
   hard_limits:
     - 命令不能凌驾 CLAUDE.md，冲突以 CLAUDE.md 为准
