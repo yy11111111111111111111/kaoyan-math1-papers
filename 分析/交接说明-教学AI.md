@@ -127,13 +127,13 @@ note: 与项目总入口的 source_authority A–E 正交，不替代它
 | `方法族-高数-一元积分学.md` | **`challenged` + `quarantine`** | ❌ **不要用于教学** |
 | `方法族-高数-重积分.md` | **`challenged` + `quarantine`** | ❌ **不要用于教学** |
 | `方法族-高数-中值定理与证明.md` | `candidate`（v1.1.0，6 条 blocker 全修并经**独立复核** confirmed_fixed） | ✅ **已解禁**，按 candidate 用：可作思路提示，讲时说明「这是路线归纳，不是标准解法」 |
-| `方法族-高数-空间解析几何与场量.md` | **`challenged` + `quarantine`** | ❌ **不要用于教学** |
+| `方法族-高数-空间解析几何与场量.md` | `candidate`（v1.1.0，5 条 blocker 全修并经**独立复核** confirmed_fixed） | ✅ **已解禁**，按 candidate 用 |
 
 #### `quarantine` 是什么意思，为什么必须当真
 
 2026-08-29 这五族各由一个独立审查 agent 过了一遍，**每一族都查出了 direct blocker**，合计 29 条。
 其中**中值定理族的 6 条已全部修复并经独立复核 confirmed_fixed，已恢复 `candidate`、解除隔离**；
-其余四族仍有 13 条未修。`quarantine` 不是「质量一般」，是「已知有错且错在哪都点名了」。
+**空间解析几何与场量族的 5 条亦已全修并经独立复核，同样已解禁**；其余三族仍有 11 条未修。`quarantine` 不是「质量一般」，是「已知有错且错在哪都点名了」。
 
 具体的坏法有两类，都会直接坑到学生：
 

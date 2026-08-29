@@ -211,7 +211,7 @@ batch2_plan:
     - { id: calc.series.route-selection,   file: 分析/方法族-高数-级数.md,     scope_problems: 29, owner: claude-series, status: delivered_candidate, note: "v1.1.0 经 SB-4 扩写为 29（27 + 2010-3/2016-1）；独立审查 0 blocker，status 保持 candidate（见 分析/审查/claude-audit-series-ee3605c.md）" }
 batch3_plan:
   batch_id: calc.method-families.batch3
-  lifecycle: four_challenged_one_restored   # 2026-08-29：五族全部经独立审查降 challenged；mvt 已修复并经独立复核恢复 candidate
+  lifecycle: three_challenged_two_restored   # 2026-08-29：五族全部经独立审查降 challenged；mvt 与 geom 已修复并经独立复核恢复 candidate
   completed_at: 2026-08-28
   independently_audited_at: 2026-08-29
   audit_method: >
@@ -225,7 +225,7 @@ batch3_plan:
     calc.int1v.route-selection:             { status: challenged, blockers: 6, fixed: 2, open: 4 }
     calc.multiple-integral.route-selection: { status: challenged, blockers: 5, fixed: 2, open: 3 }
     calc.mvt-proof.route-selection:         { status: candidate, blockers: 6, fixed: 6, open: 0, note: "**首个走完整条链路的族**：建族 → 独立审查 → 修复（integrator 2 + codex 4）→ 采纳 → 独立复核 confirmed_fixed → 恢复 candidate。见 分析/审查/claude-review-mvt-confirmed-fixed-a29f670.md" }
-    calc.space-geometry.route-selection:    { status: challenged, blockers: 5, fixed: 5, open: 0, note: "四条 blocker + 非阻塞的 BL-5 全部由 codex 补完（4bfd8e1），integrator 采纳且**无需补充**。⏳ 待 confirmed_fixed 独立复核后方可恢复 candidate" }
+    calc.space-geometry.route-selection:    { status: candidate, blockers: 5, fixed: 5, open: 0, note: "**第二个走完整条链路的族**。与 mvt 不同：integrator 在采纳阶段**未作任何补充**，全部补充发生在复核之后且均来自复核方处方。见 分析/审查/claude-review-geom-confirmed-fixed-180fe5f.md" }
   cross_cutting_finding:
     id: X-1
     class: B4
