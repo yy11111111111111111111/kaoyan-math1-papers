@@ -301,6 +301,23 @@ batch3_plan:
       改判为未修复: 2   # mvt BL-3、mint BL-3 —— 只改 guard 文本，未改决定可用性的字段
       integrator 自引入的新问题: 1   # guard 层的 `scope:` 字段，v1.3.1 无此字段，已删
       integrator 对用户的不准确陈述: 1   # R2 覆盖面实为 9/11 非 11/11，已更正
+    lesson_L3:
+      id: L-3
+      title: 结论必须落在**可执行字段**，note 只能复述、不得独家承载
+      rule: >
+        任何「该怎么做」的结论，必须写进 **可执行字段**——
+        `followup_actions` 的 `local_operation` / `action_ref`、`applies_when`、`terminal_when`。
+        `note` / `explanation` / `description` / `remainder_note` 只能**复述**它，
+        **不得独家承载**。验收方式：读一条 route 时**只看可执行字段**，看能不能走通。
+      why: >
+        这是同一个病灶的第三次发作，每次都是靠人读出来的，没有任何 lint 能查：
+        ① batch3 五族最初被判有罪的罪名之一就是「guard 与 action 不同步」；
+        ② integrator 的两处半修复（mvt guard#4 / mint guard#1）——改了 guard 文本，
+           没改 followup / applies_when / terminal_when，原 blocker 实际未解除；
+        ③ codex 第二轮的 A8——`insufficiency_note` 写了「把待证式移到一边得 G」，
+           而 A8 的两条 `local_operation` 里没有这一步；它自己的路由图却依赖这一步。
+      applies_to: 建族方、修复方、复核方三方；派工单须逐字带上本条
+
     lesson:
       id: L-1
       rule: >
