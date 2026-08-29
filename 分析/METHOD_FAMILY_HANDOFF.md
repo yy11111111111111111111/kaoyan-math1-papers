@@ -225,7 +225,7 @@ batch3_plan:
     calc.int1v.route-selection:             { status: challenged, blockers: 6, fixed: 2, open: 4 }
     calc.multiple-integral.route-selection: { status: challenged, blockers: 5, fixed: 2, open: 3 }
     calc.mvt-proof.route-selection:         { status: candidate, blockers: 6, fixed: 6, open: 0, note: "**首个走完整条链路的族**：建族 → 独立审查 → 修复（integrator 2 + codex 4）→ 采纳 → 独立复核 confirmed_fixed → 恢复 candidate。见 分析/审查/claude-review-mvt-confirmed-fixed-a29f670.md" }
-    calc.space-geometry.route-selection:    { status: challenged, blockers: 5, fixed: 2, open: 3 }
+    calc.space-geometry.route-selection:    { status: challenged, blockers: 5, fixed: 5, open: 0, note: "四条 blocker + 非阻塞的 BL-5 全部由 codex 补完（4bfd8e1），integrator 采纳且**无需补充**。⏳ 待 confirmed_fixed 独立复核后方可恢复 candidate" }
   cross_cutting_finding:
     id: X-1
     class: B4
