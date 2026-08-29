@@ -260,9 +260,9 @@ batch3_plan:
       - mint BL-1：设问轴缺「表示互化」与「比较大小」（2006-8、2015-4、2009-2）
       - mint BL-2：「换序作为求值手段」在二重求值格不可达（2013-15）
       - mint BL-4：A3 在三重格无实算出口（2009-12、2010-12、2019-19）
-      - mvt BL-1：存在性等式格缺零点/介值终结路线（2005-18(I)）
-      - mvt BL-2：不等式格缺「逐点估计 + 积分保序」（2024-19(2)）
-      - mvt BL-4：A5 缺逐阶降解与最小值定号（2012-15）
+      - ~~mvt BL-1~~ **已补完**（codex e1230df）：A8 扩到存在性等式格，新增 route Q5
+      - ~~mvt BL-2~~ **已补完**（codex e1230df）：新增 A11 + boundary B8（witness 经 integrator 复算成立）
+      - ~~mvt BL-4~~ **已补完**（codex e1230df）：A5 增自递归边与最小值支，连带同步 guard#5 与 B5
       - geom BL-1：2013-19（母线不在坐标面）无 action 接收
       - geom BL-2：2025-20（绕一般直线旋转）无 action 接收，且 B6 宣布该情形 scope 外
     B2_counter_witness:
@@ -284,7 +284,7 @@ batch3_plan:
       - int1v BLK-4：13 个题号引用中至少 9 个不符
       - int1v BLK-6：scope 与 exclusions 自相矛盾，2026-20/2008-18 在九族中无家
       - mint NB-1：10 条引用中 5 条与 TSV 冲突
-      - mvt BL-5：A2 的 mandatory continuation（all_of → A1）在不等式格悬空
+      - ~~mvt BL-5~~ **已补完**（codex e1230df）：all_of → sequence + any_of{A1,A3,A5}（改边而非删点）
       - mvt NB-1：4 条 mapping 中 3 条与题面不符
       - geom BL-4(b)：2013-19/2025-20 挂 A1，与 A1.applies_when、guard#7、B6 三处矛盾
     共通: 五族的 scan_basis 都引用了不存在的 `高数真题题面_2004-2023.md`（**已全部修复**）
