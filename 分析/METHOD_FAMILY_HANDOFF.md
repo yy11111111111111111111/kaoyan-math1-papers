@@ -266,11 +266,14 @@ batch3_plan:
       - geom BL-1：2013-19（母线不在坐标面）无 action 接收
       - geom BL-2：2025-20（绕一般直线旋转）无 action 接收，且 B6 宣布该情形 scope 外
     B2_counter_witness:
-      - **mvt BL-3（改判：未修复）**：guard#4 已改「定号或有界」，但 A7 的 description /
+      # 2026-08-29 更新：以下两条已由 codex 补完内容（分支 codex/lint-hardening-and-halffix，
+      # commit 6b5a7e1），integrator 裁定采纳，见 分析/审查/claude-adjudication-codex-lint-hardening-6b5a7e1.md。
+      # 是否记 confirmed_fixed 须由**另一个** agent 复核，本裁定不代行。
+      - **mvt BL-3（已补完，待复核）**：guard#4 已改「定号或有界」，但 A7 的 description /
         followup 唯一收尾（「判定该阶导数的符号」）/ terminal_when（「余项定号后」）/
         remainder_note（「必须定号、只能用整体信息」）/ B4 结论句 / counter_witness_search
         **六处**仍是旧语义，router 执行的是 followup 那一侧 ⇒ 2024-19(1) 仍卡死
-      - **mint BL-3（改判：未修复）**：guard#1 已拆出轮换分支，但 A3 的
+      - **mint BL-3（已补完，待复核）**：guard#1 已拆出轮换分支，但 A3 的
         applies_when 仍要求「被积函数在相应变换下有确定的奇偶性」⇒ 2015-12 的 x+2y+3z
         无奇偶性，A3 在 router 层进不去，L136 的轮换支仍不可达
       - geom BL-3：A2 的消元结果是投影的**超集**，缺「被消变量实解存在条件」guard
@@ -324,7 +327,35 @@ batch3_plan:
       mandatory followup（sequence / all_of 中的 action_ref）其目标的 eligible_cells
       必须覆盖源 action 的全部 eligible_cells。
     rationale: R1 只查存在性、R2 只查单个 action 与格的一致性，都查不出 mvt BL-5 类的悬空。
-    status: 未实现（下一轮）
+    status: **已实现并驳回（2026-08-29）**
+    verdict: >
+      规格不成立，已整体移除。codex 忠实实现后在现有 11 族上报出 13 条，
+      逐条查证发现多数是误报：`eligible_cells` 的语义是「该 action 可在哪些格**被选中**」
+      （入口集），而**强制后继天然落在入口集之外**——
+      int1v/A11（几何应用）→A1「把所得定积分交给 A1 求值」、
+      重积分/A9（形心质心）→A3「分子分母各自的积分交给 A3」都是完全正当的后继。
+      R3 把「真悬空」（mvt A2→A1，A1 是罗尔定理、对不等式题语义上不适用）
+      与「正常后继」混为一谈，而区分二者需要语义，lint 做不到。
+      ⇒ **mvt BL-5 是内容缺陷，不是结构缺陷**，不存在能捕获它的结构性 lint 规则。
+    lesson:
+      id: L-2
+      rule: >
+        **一条新 lint 规则在写进派工单之前，必须先在全部现有 artifact 上试跑一遍**，
+        看它报出的是真问题还是规则自身的模型误解。
+        本轮 integrator 把交叉复核的「建议新增 R3」照单收下、直接写进派工单，
+        未做这一步，导致执行方按「必须 error 0」的约束去**删改内容迎合错规则**。
+      corollary: >
+        派工单今后须写明：**当 lint 与内容判断冲突时，留红并写进报告，
+        不得改内容去迁就 lint。**
+  implemented_lint_rules_2026_08_29:
+    G1:
+      rule: selection_rule.guards 不得出现 v1.3.1 白名单外的字段（condition / logical_role / check / explanation）
+      by: codex
+      status: 已合入
+      note: >
+        直接堵住 integrator 上一轮自己捅的洞——往 guard 里塞了 v1.3.1 不存在的 `scope:`，
+        lint 静默通过。注入测试：注入 `scope:` → FAIL error 1，捕获正确。
+        实现中注明「新增键须同时升 schema_version，不得只放宽白名单」。
   family_worth_criterion:   # geom 审查方提出、integrator 采纳的可复用判据
     id: C1C2C3
     C1: 至少一个 cell 内存在 ≥2 条都合法且 applies_when 互不包含的 route（选错会**无法完成**而不只是变慢）

@@ -9,7 +9,6 @@
       （防止「局部子任务完成」在 S1 的 terminal 语义下被误读成「整题完成」）
   R1  followup 的 action_ref 必须指向本 family 内真实存在的 action（B4 类）
   R2  action 的 eligible_cells 必须与 level_2_candidates 的 cell 清单双向一致（B4 类）
-  R3  sequence / all_of 的 action_ref 目标必须覆盖源 action 的 eligible_cells
   G1  selection_rule.guards 不得出现 v1.3.1 白名单外的字段
   U1  family_id 不得在多个文件中重复定义（多文件加载会静默覆盖）
   D1  同一 YAML 映射内不得有重复键（pyyaml 会静默取最后一个，是沉默失效的错误源）
@@ -194,29 +193,6 @@ def main():
                     if tgt not in ids:
                         err.append(f"{fid}/{a['action_id']}: action_ref 指向不存在的 {tgt!r}（R1）")
 
-        # R3: 强制后继在源 action 的每个可用格中都必须可达。
-        # 两端都显式声明 eligible_cells 时才可作集合比较；
-        # 未声明者沿用 R2 的既有豁免，不在 R3 中臆造可用格。
-        actions_by_id = {a['action_id']: a for a in r['candidate_actions']}
-        for a in r['candidate_actions']:
-            f = a.get('followup_actions')
-            source_cells = a.get('eligible_cells')
-            if (not isinstance(f, dict)
-                    or f.get('mode') not in ('sequence', 'all_of')
-                    or source_cells is None):
-                continue
-            for it in f.get('actions', []):
-                if not (isinstance(it, dict) and it.get('kind') == 'action_ref'):
-                    continue
-                target_id = it.get('action')
-                target = actions_by_id.get(target_id)
-                if target is None or target.get('eligible_cells') is None:
-                    continue
-                missing = sorted(set(source_cells) - set(target['eligible_cells']))
-                if missing:
-                    err.append(
-                        f"{fid}/{a['action_id']}: {f.get('mode')} 后继 {target_id!r} "
-                        f"未覆盖源 action 的 eligible_cells {missing}（R3）")
 
         # R2: eligible_cells 与 level_2_candidates 清单双向一致
         cells = {}
