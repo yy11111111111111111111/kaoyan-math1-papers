@@ -211,8 +211,104 @@ batch2_plan:
     - { id: calc.series.route-selection,   file: 分析/方法族-高数-级数.md,     scope_problems: 29, owner: claude-series, status: delivered_candidate, note: "v1.1.0 经 SB-4 扩写为 29（27 + 2010-3/2016-1）；独立审查 0 blocker，status 保持 candidate（见 分析/审查/claude-audit-series-ee3605c.md）" }
 batch3_plan:
   batch_id: calc.method-families.batch3
-  lifecycle: all_families_built     # 五族全部建成；均为 candidate，均未独立审查
+  lifecycle: all_families_challenged   # 2026-08-29：五族全部经独立审查，全部降 challenged
   completed_at: 2026-08-28
+  independently_audited_at: 2026-08-29
+  audit_method: >
+    integrator 并行派出**五个独立审查 agent**（一族一个，全部只读、不改文件，
+    只出 recommendation），补上「建族方同时是 integrator」的结构性缺口。
+    integrator 逐条复核后采纳，改动由 integrator 落地。
+    五份报告：分析/审查/claude-audit-batch3-{diff1v, int1v, multiple-integral,
+    mvt-proof, space-geometry}-a635bd6.md
+  audit_outcome:
+    calc.diff1v.route-selection:            { status: challenged, blockers: 7, fixed: 2, open: 5 }
+    calc.int1v.route-selection:             { status: challenged, blockers: 6, fixed: 2, open: 4 }
+    calc.multiple-integral.route-selection: { status: challenged, blockers: 5, fixed: 2, open: 3 }
+    calc.mvt-proof.route-selection:         { status: challenged, blockers: 6, fixed: 2, open: 4 }
+    calc.space-geometry.route-selection:    { status: challenged, blockers: 5, fixed: 2, open: 3 }
+  cross_cutting_finding:
+    id: X-1
+    class: B4
+    title: lint 的 R2 检查对 11 族中的 7 族静默空转
+    detail: >
+      R2 取 `c.get('cell_id') or CELL_ALIAS.get(c.get('cell'))`，而 CELL_ALIAS 只收录
+      batch1 vector 族的四个格名。batch2/batch3 各族用中文 `cell:` 且无 `cell_id`
+      ⇒ key 全为 None ⇒ cells 为空 ⇒ `if cells:` 短路 ⇒ **R2 整体跳过**。
+      实测生效面：vector / ode / series / multivar 四族；
+      空转：limit / extrema / diff1v / int1v / multiple-integral / mvt-proof /
+      space-geometry **七族**。
+      HANDOFF 此前称「R1 与 R2 是 B4 类的自动化防线，两者均已用注入式测试验证会触发」——
+      注入式测试是在 batch1 的文件上做的，因而没暴露这个缺口。
+      **「lint error 0」在这七族上此前并不代表 R2 通过。**
+    found_by: 三个审查 agent 独立发现（diff1v BL-6 / int1v BLK-5 / multiple-integral BL-5）
+    fixed: true
+    fix: >
+      CELL_ALIAS 补齐 batch3 中格名与 eligible_cells 简称不一致者；
+      key 增加回落 `or c.get('cell')`（名称一致的族无需别名）；
+      并新增一条 error：level_2_candidates 存在但无一格可解析为 cell key 时报 R2。
+    caught_after_fix:   # R2 上线后立刻捞出的三条真实不一致，均已修正
+      - calc.diff1v/A12：声明 [参数式, 判形态]，但「判形态」格清单为 [A8,A9,A10,A11] → 删「判形态」
+      - calc.int1v/A10：声明含「不定积分与定积分求值」但该格清单无 A10 → 补入该格
+      - calc.multiple-integral/A6：自称三重专用却被「二重 · 求值」格列为候选 → 移出二重格
+  open_blocker_summary:   # 已复核成立但**未修复**，下一轮的工作面
+    B1_route_miss:
+      - diff1v BL-1：显式函数的「求切线/法线」无 cell；A12 排除「由斜率反求切点」（2004-1）
+      - diff1v BL-2：缺「凸性 ⇒ 弦/切线位置关系」（2014-2、2026-3、2007-5）
+      - diff1v BL-3：参数式在 x′(t) **不存在**处无 action；消参有 excluded_candidate 无 action（2023-3）
+      - int1v BLK-1：「由图形/几何意义直接读积分值」整族不存在（2007-3、2017-4、2009-3）
+      - int1v BLK-2：缺「分段/绝对值拆区间 + 由连续性定各段常数」（2016-2）
+      - mint BL-1：设问轴缺「表示互化」与「比较大小」（2006-8、2015-4、2009-2）
+      - mint BL-2：「换序作为求值手段」在二重求值格不可达（2013-15）
+      - mint BL-4：A3 在三重格无实算出口（2009-12、2010-12、2019-19）
+      - mvt BL-1：存在性等式格缺零点/介值终结路线（2005-18(I)）
+      - mvt BL-2：不等式格缺「逐点估计 + 积分保序」（2024-19(2)）
+      - mvt BL-4：A5 缺逐阶降解与最小值定号（2012-15）
+      - geom BL-1：2013-19（母线不在坐标面）无 action 接收
+      - geom BL-2：2025-20（绕一般直线旋转）无 action 接收，且 B6 宣布该情形 scope 外
+    B2_counter_witness:
+      - geom BL-3：A2 的消元结果是投影的**超集**，缺「被消变量实解存在条件」guard
+        （反例 {x²+z²=1, y²+z²=1}：消元给 x²=y² 的完整直线，真实投影只有 |x|≤1 的线段）
+    B4_semantic:
+      - diff1v BL-5：A2/A5 的 continuation 交给 limit 族，而该族 exclusions 明文未纳入该类极限
+      - diff1v BL-7：A7 的三个真题引用全错（应为 2005-1/2007-2/2012-1/2014-1/2023-1）
+      - int1v BLK-4：13 个题号引用中至少 9 个不符
+      - int1v BLK-6：scope 与 exclusions 自相矛盾，2026-20/2008-18 在九族中无家
+      - mint NB-1：10 条引用中 5 条与 TSV 冲突
+      - mvt BL-5：A2 的 mandatory continuation（all_of → A1）在不等式格悬空
+      - mvt NB-1：4 条 mapping 中 3 条与题面不符
+      - geom BL-4(b)：2013-19/2025-20 挂 A1，与 A1.applies_when、guard#7、B6 三处矛盾
+    共通: 五族的 scan_basis 都引用了不存在的 `高数真题题面_2004-2023.md`（**已全部修复**）
+  new_lint_rule_proposed:
+    id: R3
+    rule: >
+      mandatory followup（sequence / all_of 中的 action_ref）其目标的 eligible_cells
+      必须覆盖源 action 的全部 eligible_cells。
+    rationale: R1 只查存在性、R2 只查单个 action 与格的一致性，都查不出 mvt BL-5 类的悬空。
+    status: 未实现（下一轮）
+  family_worth_criterion:   # geom 审查方提出、integrator 采纳的可复用判据
+    id: C1C2C3
+    C1: 至少一个 cell 内存在 ≥2 条都合法且 applies_when 互不包含的 route（选错会**无法完成**而不只是变慢）
+    C2: 至少一条 guard 的作用是在 route 之间**择路**，而非只校验单条 route 的参数
+    C3: C1 的分叉点在 scope 清单的具体题目上被触发过，而非纯理论构造
+    verdict: 三条同时满足 ⇒ 值得建族；否则应降格为 分析/高数方法速查.md 的条目
+    todo: 用它回扫已建各族（跨族待办）
+  rulings_2026_08_29:
+    - id: SB-7
+      question: 2025-20 主设问是第二类曲面积分（Gauss 补面法），是否应移出 space-geometry？
+      ruling: >
+        **驳回，维持归本族。** TSV 实测 2025-20 主考点 = 「旋转曲面的方程」，
+        次考点才是「高斯公式补面法」。按 scope_boundary_rule（主考点定归属），
+        归本族无误，geom BL-2 不因此消解。
+    - id: SB-8
+      question: 三道场量题（2016-10/2018-11/2026-11）并入 space-geometry 是否牵强？
+      ruling: >
+        **归并理由牵强，归并结果保留。** 「路由结构相同（认公式→定参数→代入算）」
+        在高数里近乎普适、不可证伪，不构成合并的充分理由；且考纲把散度/旋度列在
+        「6. 多元函数积分学」，与空间解析几何（第 4 章）分属两章。
+        但 vector 族的 objects 声明为四类积分，三题都不含积分，迁入会破坏该声明。
+        **采方案 (ii)**：三题留本族，把家族定位的理由改写为「考纲第 4 章 + 第 6 章的
+        场量算子部分，三题不足以单开一族」这一明示跨章的实用理由，
+        并在 scope.exclusions 写明分界（含积分 → vector；只求算子 → 本族）。TSV 不动。
   goal: 补完高数剩余 101 题，使高数主考点全覆盖
   rule: 每族独立文件；scope 由**本清单逐题定义**（新规矩，不再用关键词计数）
   measured_at: 2026-08-28
@@ -257,8 +353,10 @@ batch3_plan:
     「有族归属」≠「已被验证」。九个高数族中：
     batch1 三族已 CLOSED（limit partially_verified、vector/extrema candidate）；
     ODE / 级数 / 多元 为 candidate 且经过独立审查；
-    **batch3 五族均为 candidate 且均未经独立审查**——建族方同时是 integrator，
-    独立性弱。这是当前最大的结构性缺口。
+    **batch3 五族已于 2026-08-29 全部经独立审查（一族一个 agent，五个并行），
+    结果全部由 candidate 降为 challenged + quarantine。** 建族方同时是 integrator
+    这一结构性缺口已补上；但五族现均处 challenged，恢复 candidate 需先修复
+    open_blocker_summary 所列各项，再由**另一个** agent 复核 confirmed_fixed。
 
   scope_boundary_rule:
     decided_at: 2026-08-28

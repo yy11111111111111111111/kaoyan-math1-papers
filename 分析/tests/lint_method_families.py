@@ -68,6 +68,18 @@ CELL_ALIAS = {
     '空间 · 曲线 · 第二类': 'spatial_curve_second_kind',
     '曲面 · 第二类':        'surface_second_kind',
     '曲线或曲面 · 第一类':  'first_kind',
+    # batch3：level_2_candidates 的格名与 eligible_cells 的简称不一致者，
+    # 在此对齐。名称一致的族由下面的 `or c.get('cell')` 回落处理。
+    # 2026-08-29 补：此前这些族的格名不在表内 ⇒ key 为 None ⇒ cells 为空 ⇒
+    # R2 整体静默跳过，B4 类防线对 11 族中的 7 族失效（见 分析/审查/ batch3 五份审查报告）。
+    '显式 · 求导数值或导函数': '显式求导',
+    '参数式 · 求导或切线':     '参数式',
+    '分段 · 正则性或分段点导数': '分段正则性',
+    '求渐近线':               '渐近线',
+    '判形态（单调/凹凸/极值/拐点）': '判形态',
+    '抽象函数 · 任意设问':     '抽象函数',
+    '二重 · 求值':            '二重求值',
+    '三重 · 求值':            '三重求值',
 }
 
 # GPT v3.2 full-file audit 点名的措辞；只允许出现在 status_history 的引述里
@@ -174,9 +186,12 @@ def main():
         # R2: eligible_cells 与 level_2_candidates 清单双向一致
         cells = {}
         for c in r.get('level_2_candidates') or []:
-            key = c.get('cell_id') or CELL_ALIAS.get(c.get('cell'))
+            # 回落到原始格名：名称与 eligible_cells 一致的族无需别名。
+            key = c.get('cell_id') or CELL_ALIAS.get(c.get('cell')) or c.get('cell')
             if key:
                 cells[key] = set(c['actions'])
+        if not cells and (r.get('level_2_candidates') or []):
+            err.append(f"{fid}: level_2_candidates 存在但无一格可解析为 cell key，R2 将被跳过（R2）")
         if cells:
             for a in r['candidate_actions']:
                 ec = a.get('eligible_cells')
