@@ -9,6 +9,8 @@
       （防止「局部子任务完成」在 S1 的 terminal 语义下被误读成「整题完成」）
   R1  followup 的 action_ref 必须指向本 family 内真实存在的 action（B4 类）
   R2  action 的 eligible_cells 必须与 level_2_candidates 的 cell 清单双向一致（B4 类）
+  R3  sequence / all_of 的 action_ref 目标必须覆盖源 action 的 eligible_cells
+  G1  selection_rule.guards 不得出现 v1.3.1 白名单外的字段
   U1  family_id 不得在多个文件中重复定义（多文件加载会静默覆盖）
   D1  同一 YAML 映射内不得有重复键（pyyaml 会静默取最后一个，是沉默失效的错误源）
   C1  frontmatter status_summary 必须与各族正文 status 一致
@@ -61,6 +63,9 @@ DOCS = [
                  '方法族-高数-多元微分.md'),
 ]
 SCHEMA = 'CALC-METHOD-FAMILY-v1.3.1'
+# 由当前 11 族的 selection_rule.guards 实际键全集得出；
+# 要引入新键，必须同时升级 schema_version，不得只放宽此集合。
+GUARD_KEYS = {'condition', 'logical_role', 'check', 'explanation'}
 
 # level_2_candidates 用中文 cell 名，route_scan_by_cell 用英文 cell_id
 CELL_ALIAS = {
@@ -144,6 +149,12 @@ def main():
             err.append(f"{fid}: pedagogical_validation 非 untested")
         if r['status'] == 'challenged' and r.get('teaching_use') != 'quarantine':
             err.append(f"{fid}: challenged 但未 quarantine")
+        for i, guard in enumerate((r.get('selection_rule') or {}).get('guards') or [], 1):
+            if not isinstance(guard, dict):
+                continue
+            extra = sorted(set(guard) - GUARD_KEYS)
+            if extra:
+                err.append(f"{fid}/guard#{i}: 含白名单外字段 {extra}（G1）")
         # C1/C2: 用该族所在文件的 frontmatter
         fm = fm_index[fid]
         declared = (fm.get('status_summary') or {}).get(fid)
@@ -182,6 +193,30 @@ def main():
                     tgt = it.get('action')
                     if tgt not in ids:
                         err.append(f"{fid}/{a['action_id']}: action_ref 指向不存在的 {tgt!r}（R1）")
+
+        # R3: 强制后继在源 action 的每个可用格中都必须可达。
+        # 两端都显式声明 eligible_cells 时才可作集合比较；
+        # 未声明者沿用 R2 的既有豁免，不在 R3 中臆造可用格。
+        actions_by_id = {a['action_id']: a for a in r['candidate_actions']}
+        for a in r['candidate_actions']:
+            f = a.get('followup_actions')
+            source_cells = a.get('eligible_cells')
+            if (not isinstance(f, dict)
+                    or f.get('mode') not in ('sequence', 'all_of')
+                    or source_cells is None):
+                continue
+            for it in f.get('actions', []):
+                if not (isinstance(it, dict) and it.get('kind') == 'action_ref'):
+                    continue
+                target_id = it.get('action')
+                target = actions_by_id.get(target_id)
+                if target is None or target.get('eligible_cells') is None:
+                    continue
+                missing = sorted(set(source_cells) - set(target['eligible_cells']))
+                if missing:
+                    err.append(
+                        f"{fid}/{a['action_id']}: {f.get('mode')} 后继 {target_id!r} "
+                        f"未覆盖源 action 的 eligible_cells {missing}（R3）")
 
         # R2: eligible_cells 与 level_2_candidates 清单双向一致
         cells = {}
