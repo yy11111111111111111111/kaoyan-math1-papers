@@ -266,6 +266,13 @@ batch3_plan:
       - geom BL-1：2013-19（母线不在坐标面）无 action 接收
       - geom BL-2：2025-20（绕一般直线旋转）无 action 接收，且 B6 宣布该情形 scope 外
     B2_counter_witness:
+      - **mvt BL-3（改判：未修复）**：guard#4 已改「定号或有界」，但 A7 的 description /
+        followup 唯一收尾（「判定该阶导数的符号」）/ terminal_when（「余项定号后」）/
+        remainder_note（「必须定号、只能用整体信息」）/ B4 结论句 / counter_witness_search
+        **六处**仍是旧语义，router 执行的是 followup 那一侧 ⇒ 2024-19(1) 仍卡死
+      - **mint BL-3（改判：未修复）**：guard#1 已拆出轮换分支，但 A3 的
+        applies_when 仍要求「被积函数在相应变换下有确定的奇偶性」⇒ 2015-12 的 x+2y+3z
+        无奇偶性，A3 在 router 层进不去，L136 的轮换支仍不可达
       - geom BL-3：A2 的消元结果是投影的**超集**，缺「被消变量实解存在条件」guard
         （反例 {x²+z²=1, y²+z²=1}：消元给 x²=y² 的完整直线，真实投影只有 |x|≤1 的线段）
     B4_semantic:
@@ -278,6 +285,39 @@ batch3_plan:
       - mvt NB-1：4 条 mapping 中 3 条与题面不符
       - geom BL-4(b)：2013-19/2025-20 挂 A1，与 A1.applies_when、guard#7、B6 三处矛盾
     共通: 五族的 scan_basis 都引用了不存在的 `高数真题题面_2004-2023.md`（**已全部修复**）
+  cross_review_of_integrator_fixes:
+    reviewed_at: 2026-08-29
+    head_reviewed: 23800a1
+    why: >
+      五族的独立审查补上了「建族方兼 integrator」的缺口，但 integrator 依据五份报告
+      落的 10 处修复**又没有任何人看过**——缺口只是平移到了「修复方兼 integrator」。
+      故派三个仍有上下文的审查 agent 交叉派单：每人审自己**没审过**的族。
+    report: 分析/审查/claude-crossreview-batch3-integrator-fixes-23800a1.md
+    outcome:
+      confirmed_fixed: 6
+      改判为未修复: 2   # mvt BL-3、mint BL-3 —— 只改 guard 文本，未改决定可用性的字段
+      integrator 自引入的新问题: 1   # guard 层的 `scope:` 字段，v1.3.1 无此字段，已删
+      integrator 对用户的不准确陈述: 1   # R2 覆盖面实为 9/11 非 11/11，已更正
+    lesson:
+      id: L-1
+      rule: >
+        **改一条 guard ⇒ 必须 grep 该结论在 failure_boundary / action 的 local_operation /
+        minimal_probe / route_scan 标签 四个位置的全部出现点。**
+        这四处目前没有任何 lint 项覆盖（R1/R2 只查 action_ref 与 eligible_cells），
+        而 batch3 五族最初被判有罪的罪名之一就是「guard 与 action 不同步」——
+        integrator 的修复重犯了同一条。建议固化为收口步骤。
+    r2_coverage_corrected:
+      active: 9        # vector, ode, series, multivar, diff1v, int1v, multiple-integral, mvt-proof, space-geometry
+      inactive: 2      # limit, extrema —— 既无 level_2_candidates 也无 eligible_cells，属「无可查」而非「已查」
+      note: 此前记「修复后全覆盖」不准确
+    additional_lint_fix:
+      id: X-1b
+      title: R2 的静默通道原只堵了一半
+      detail: >
+        新增的 error 以 level_2_candidates **非空**为触发前提；该块整体缺失而
+        action 仍声明 eligible_cells 时，R2 照旧静默跳过（注入测试 t2 实测 PASS error 0）。
+        已补反方向守卫，并复跑 t2 验证会触发（FAIL error 1），确认非死代码。
+
   new_lint_rule_proposed:
     id: R3
     rule: >

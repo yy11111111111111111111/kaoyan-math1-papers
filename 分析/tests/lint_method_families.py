@@ -192,6 +192,11 @@ def main():
                 cells[key] = set(c['actions'])
         if not cells and (r.get('level_2_candidates') or []):
             err.append(f"{fid}: level_2_candidates 存在但无一格可解析为 cell key，R2 将被跳过（R2）")
+        # 反方向：level_2_candidates 整块缺失、但有 action 声明了 eligible_cells 时，
+        # 这些声明此前完全不被检查（注入测试 t2 实测 PASS error 0）。两侧都要堵。
+        if not cells and any(a.get('eligible_cells') is not None
+                             for a in r['candidate_actions']):
+            err.append(f"{fid}: 有 action 声明了 eligible_cells 但无 level_2_candidates 可比对，R2 将被跳过（R2）")
         if cells:
             for a in r['candidate_actions']:
                 ec = a.get('eligible_cells')
