@@ -61,3 +61,9 @@ centroid route universe 的“唯一结构”与保留帕普斯为合法候选�
 修复报告/过程/历史。工作区缺少《00_数学教学_启动入口.md》。`global_exhaustiveness`
 仍为 `not_established`，七格仅声明 universe 内单轮扫描。
 
+## 处方落地后的定向复核
+
+- HEAD `8b1402d`：NF-B4-1 仍为 `not_fixed`。七格与版本/历史均正确，但当前
+  `method_family_rule` 缺 `teaching_use`；B 要求显式落 `teaching_use: normal`。
+- HEAD `52f546e`：NF-B4-1 `confirmed_fixed`，`files_changed: []`。当前字段明确为
+  `status: candidate` + `teaching_use: normal`，唯一剩余处方完整落地。

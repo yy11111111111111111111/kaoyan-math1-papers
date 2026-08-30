@@ -211,7 +211,7 @@ batch2_plan:
     - { id: calc.series.route-selection,   file: 分析/方法族-高数-级数.md,     scope_problems: 29, owner: claude-series, status: delivered_candidate, note: "v1.1.0 经 SB-4 扩写为 29（27 + 2010-3/2016-1）；独立审查 0 blocker，status 保持 candidate（见 分析/审查/claude-audit-series-ee3605c.md）" }
 batch3_plan:
   batch_id: calc.method-families.batch3
-  lifecycle: one_challenged_four_restored   # 2026-08-30：mvt、geom、diff1v、int1v 已修复并经独立复核恢复 candidate
+  lifecycle: all_restored   # 2026-08-30：batch3 五族均已修复并经独立复核恢复 candidate
   completed_at: 2026-08-28
   independently_audited_at: 2026-08-29
   audit_method: >
@@ -223,7 +223,7 @@ batch3_plan:
   audit_outcome:
     calc.diff1v.route-selection:            { status: candidate, blockers: 7, fixed: 7, open: 0, note: "修复方 agent A 补齐 4 条 open blocker，独立复核方 agent B confirmed_fixed；integrator 依处方补齐状态语义后恢复 candidate。见 分析/审查/codex-adjudication-agent-a-diff1v-04df5f2.md" }
     calc.int1v.route-selection:             { status: candidate, blockers: 6, fixed: 6, open: 0, note: "修复方 agent A 补齐 4 条 open blocker，独立复核方 agent B confirmed_fixed；integrator 按 B 的 NF-B4-1 处方同步状态语义后恢复 candidate。见 分析/审查/codex-adjudication-agent-a-int1v-387cd8d.md" }
-    calc.multiple-integral.route-selection: { status: challenged, blockers: 5, fixed: 2, open: 3 }
+    calc.multiple-integral.route-selection: { status: candidate, blockers: 5, fixed: 5, open: 0, note: "修复方 agent A 补齐 3 条 open blocker，并完成 BL-3 executable route；独立复核方 agent B 全部 confirmed_fixed。integrator 按 B 的 NF-B4-1/NB-1 处方同步后恢复 candidate。见 分析/审查/codex-adjudication-agent-a-multiple-integral-07c30ec.md" }
     calc.mvt-proof.route-selection:         { status: candidate, blockers: 6, fixed: 6, open: 0, note: "**首个走完整条链路的族**：建族 → 独立审查 → 修复（integrator 2 + codex 4）→ 采纳 → 独立复核 confirmed_fixed → 恢复 candidate。见 分析/审查/claude-review-mvt-confirmed-fixed-a29f670.md" }
     calc.space-geometry.route-selection:    { status: candidate, blockers: 5, fixed: 5, open: 0, note: "**第二个走完整条链路的族**。与 mvt 不同：integrator 在采纳阶段**未作任何补充**，全部补充发生在复核之后且均来自复核方处方。见 分析/审查/claude-review-geom-confirmed-fixed-180fe5f.md" }
   cross_cutting_finding:
@@ -250,16 +250,16 @@ batch3_plan:
       - calc.diff1v/A12：声明 [参数式, 判形态]，但「判形态」格清单为 [A8,A9,A10,A11] → 删「判形态」
       - calc.int1v/A10：声明含「不定积分与定积分求值」但该格清单无 A10 → 补入该格
       - calc.multiple-integral/A6：自称三重专用却被「二重 · 求值」格列为候选 → 移出二重格
-  open_blocker_summary:   # 已复核成立但**未修复**，下一轮的工作面
+  open_blocker_summary:   # 2026-08-30：本节原 blocker 均已闭环，保留追溯
     B1_route_miss:
       - ~~diff1v BL-1~~ **已闭环**（A 补显式切/法线 cell 与反求切点动作；B confirmed_fixed）
       - ~~diff1v BL-2~~ **已闭环**（A 新增凸性全局不等式动作；B confirmed_fixed）
       - ~~diff1v BL-3~~ **已闭环**（A 新增参数式异常点消参路线；B confirmed_fixed）
       - ~~int1v BLK-1~~ **已闭环**（A12 图形/几何有向累计路线；B confirmed_fixed）
       - ~~int1v BLK-2~~ **已闭环**（A13 分段原函数拼接常数路线；B confirmed_fixed）
-      - mint BL-1：设问轴缺「表示互化」与「比较大小」（2006-8、2015-4、2009-2）
-      - mint BL-2：「换序作为求值手段」在二重求值格不可达（2013-15）
-      - mint BL-4：A3 在三重格无实算出口（2009-12、2010-12、2019-19）
+      - ~~mint BL-1~~ **已闭环**（A10 表示互化、A11 跨区域比较；B confirmed_fixed）
+      - ~~mint BL-2~~ **已闭环**（A7 从二重求值入口换序并实际算值；B confirmed_fixed）
+      - ~~mint BL-4~~ **已闭环**（A3 关系不足时分流 A1/A2/A4/A5/A6 实算；B confirmed_fixed）
       - ~~mvt BL-1~~ **已补完**（codex e1230df）：A8 扩到存在性等式格，新增 route Q5
       - ~~mvt BL-2~~ **已补完**（codex e1230df）：新增 A11 + boundary B8（witness 经 integrator 复算成立）
       - ~~mvt BL-4~~ **已补完**（codex e1230df）：A5 增自递归边与最小值支，连带同步 guard#5 与 B5
@@ -274,8 +274,7 @@ batch3_plan:
         followup 唯一收尾（「判定该阶导数的符号」）/ terminal_when（「余项定号后」）/
         remainder_note（「必须定号、只能用整体信息」）/ B4 结论句 / counter_witness_search
         **六处**仍是旧语义，router 执行的是 followup 那一侧 ⇒ 2024-19(1) 仍卡死
-      - ⏳ **mint BL-3（已补完，但从未独立复核）** —— codex 第一轮补的 A3.applies_when，
-        当时未随重积分族一起送复核。**重积分那一轮的 confirmed_fixed 复核必须把它一并纳入。**
+      - ~~mint BL-3~~ **已闭环**（B 独立重核 2015-12：遮 note/minimal_probe 后 A3 轮换→A4→A1 可执行，confirmed_fixed）
       # 原文：mint BL-3（已补完，待复核）：guard#1 已拆出轮换分支，但 A3 的
         applies_when 仍要求「被积函数在相应变换下有确定的奇偶性」⇒ 2015-12 的 x+2y+3z
         无奇偶性，A3 在 router 层进不去，L136 的轮换支仍不可达
@@ -286,7 +285,7 @@ batch3_plan:
       - ~~diff1v BL-7~~ **已闭环**（integrator 改为 2005-1/2007-2/2012-1/2014-1/2023-1）
       - ~~int1v BLK-4~~ **已闭环**（mapping 重做并由 B 独立抽查允许年份题面）
       - ~~int1v BLK-6~~ **已闭环**（2008-18/2026-20 留在 int1v，A14/A15 路线可执行；B confirmed_fixed）
-      - mint NB-1：10 条引用中 5 条与 TSV 冲突
+      - ~~mint NB-1~~ **已闭环**（mapping 重做；B 按允许证据边界复核）
       - ~~mvt BL-5~~ **已补完**（codex e1230df）：all_of → sequence + any_of{A1,A3,A5}（改边而非删点）
       - ~~mvt NB-1~~ **已闭环**（codex 重做 positive_instance_mapping）
       - ~~geom BL-4(b)~~ **已闭环**（mapping 拆三条，重挂 A1b/A1c）
@@ -446,8 +445,8 @@ batch3_plan:
     ODE / 级数 / 多元 为 candidate 且经过独立审查；
     **batch3 五族已于 2026-08-29 全部经独立审查（一族一个 agent，五个并行），
     当时全部由 candidate 降为 challenged + quarantine。** 建族方同时是 integrator
-    这一结构性缺口已补上。mvt、geom、diff1v、int1v 已分别由修复方处理、由另一复核方
-    confirmed_fixed 并恢复 candidate；仅 multiple-integral 仍须完成同一闭环。
+    这一结构性缺口已补上。mvt、geom、diff1v、int1v、multiple-integral 均已分别由
+    修复方处理、由另一复核方 confirmed_fixed 并恢复 candidate；batch3 无剩余 quarantine。
 
   scope_boundary_rule:
     decided_at: 2026-08-28
