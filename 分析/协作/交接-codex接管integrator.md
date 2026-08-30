@@ -4,29 +4,40 @@
 issued_at: 2026-08-29
 issued_by: claude-code-remote（离任 integrator）
 to: codex（本机，有 GitHub 推送权限，可派子 agent）
-change: codex 由「执行方」升为「执行方 + integrator」，独立复核由**它自己派的子 agent**承担
+change: >
+  codex 接替上一任 integrator 的位置。**codex 本身只当 integrator，不亲自改族文件**；
+  修复与复核各派一个子 agent 承担。三方分立的结构原样保留，只是换了人。
 ```
 
-## ⚠️ 这次变更最大的风险：独立性坍缩
+## 0. 角色分工：你只当裁判，两边都派子 agent
 
-此前的流程之所以能抓出错，是因为**三个角色由三方担任**：建族 / 修复 / 复核。
-现在你一人兼两职、第三职由你的子 agent 担任 —— **独立性比之前弱**。
-项目里已经有两次血的教训，都发生在「同一方既做又判」的时候：
+上一任的结构是「claude 当 integrator + codex 当执行方 + claude 的子 agent 当复核方」。
+现在把 claude 换成你即可 —— **三方分立不变**：
 
-- batch3 五族最初被判有罪，原因就是**建族方同时是 integrator**；
-- 上一任 integrator 落完修复后没人复核，交叉复核查出**两处半修复**（只改 guard 文本、
-  没改真正决定可用性的 `applies_when` / `followup` / `terminal_when`）和**一处自己引入的越 schema 字段**。
+| 角色 | 由谁担任 | 干什么 |
+|---|---|---|
+| **修复方** | 你派的**子 agent A** | 按派工单改族文件，自开分支，写自述报告 |
+| **复核方** | 你派的**子 agent B** | `confirmed_fixed` 独立复核，**纯只读**，出 recommendation |
+| **integrator** | **你自己** | 写派工单、核验采纳、裁定、落复核方处方、改 status、同步下游、合并推送 |
 
-所以你必须做到三条，否则这套流程就白建了：
+**你自己不要亲手改族文件的内容。** 你的手只落在：
+派工单、裁定报告、`status` / `doc_version` / `status_history`、下游同步（HANDOFF / 看板 / 教学两份）、
+以及**复核方明确开出处方的那几处**。
+—— 上一任在 mvt 那轮于采纳阶段自己补了两处，等于把执行方和审查方的活揽了过来；
+geom 那轮一个字没补、所有补充都发生在复核之后且来自复核方处方，**后者才是对的形态**。
 
-1. **修复与复核必须是不同的子 agent。** 派去做 `confirmed_fixed` 复核的那个，
-   **不得**是本轮修过该族的那个，也不得读过你的修复过程。给它干净的任务书，让它自己读文件。
-2. **你不得替复核方下结论。** 复核方说 `not_fixed`，你就得改；你不同意，
-   **把分歧写进裁定报告**，而不是压下去。上一任的做法可参照
-   `分析/审查/claude-adjudication-codex-lint-hardening-6b5a7e1.md`
-   ——那次 integrator 驳回了一条规则，但明写「**这是我自己的规格错误，不是执行方的实现错误**」。
-3. **报告里如实写「这一轮谁改的、谁复核的」。** 若某一步实际上没有独立第三方，
-   就写明「本轮该环节独立性不足」，不要粉饰。
+### 三条必须守住的
+
+1. **子 agent A 与子 agent B 必须是两个**，且 B **不得**读过 A 的修复过程 —— 给 B 干净的任务书，让它自己去读文件。
+2. **你不得替复核方下结论。** B 说 `not_fixed`，你就得改；你不同意，**把分歧写进裁定报告**，而不是压下去。
+   范例：`分析/审查/claude-adjudication-codex-lint-hardening-6b5a7e1.md`
+   ——那次 integrator 驳回了一条 lint 规则，但明写「**这是我自己的规格错误，不是执行方的实现错误**」。
+3. **报告里如实写「本轮谁改的、谁复核的」。** 哪个环节实际上没有独立第三方，就写明，不要粉饰。
+
+> 项目里两次事故都发生在「同一方既做又判」：
+> batch3 五族最初被判有罪，就是因为**建族方同时是 integrator**；
+> 上一任落完修复没人复核，交叉复核查出**两处半修复**（只改 guard 文本、没改真正决定可用性的
+> `applies_when` / `followup` / `terminal_when`）和**一处自己引入的越 schema 字段**。
 
 ---
 
@@ -54,8 +65,8 @@ python3 分析/tests/lint_method_families.py      # 基线：error 0 · warning 
 | 族 | blocker | 派工单 |
 |---|---|---|
 | 一元微分学 | 4（BL-1/2/3/5） | ✅ `派工-codex-2026-08-29-第四轮.md` 已就绪 |
-| 一元积分学 | 4（BLK-1/2/4/6） | 你自己写 |
-| 重积分 | 3（BL-1/2/4） | 你自己写 |
+| 一元积分学 | 4（BLK-1/2/4/6） | 你写，派给子 agent A |
+| 重积分 | 3（BL-1/2/4） | 你写，派给子 agent A |
 
 已闭环:中值定理、空间几何(均 `candidate`)。四条的完整论证在
 `分析/审查/claude-audit-batch3-*-a635bd6.md` 对应那份里。
@@ -63,14 +74,15 @@ python3 分析/tests/lint_method_families.py      # 基线：error 0 · warning 
 ## 三、每族一个循环
 
 ```
-① 你修（只动该族一个文件）
-② 派子 agent 做 confirmed_fixed 复核 —— 必须是没参与本轮修复的那个
-③ 你按复核方的处方落地 + 写裁定报告（分歧照写）
-④ status challenged → candidate、解除 quarantine、bump doc_version、
-   追加 status_history、归档复核报告
-⑤ 同步四处：METHOD_FAMILY_HANDOFF / 协作/看板.md /
+① 你写派工单 → 派**子 agent A** 去修（只动该族一个文件，自开分支，写自述报告）
+② 你核验 A 的产出（基线 / 文件范围 / status 未被动 / lint）→ cherry-pick
+③ 派**子 agent B** 做 confirmed_fixed 复核 —— 必须不是 A，且不给它 A 的过程
+④ 你按 B 的处方落地 + 写裁定报告（分歧照写）
+⑤ status challenged → candidate、解除 quarantine、bump doc_version、
+   追加 status_history、归档 A 与 B 的两份报告
+⑥ 同步四处：METHOD_FAMILY_HANDOFF / 协作/看板.md /
    交接说明-教学AI §2.3 / GPT接入包（档 3 + 那段 ⚠️ + Instructions 第 4 条）
-⑥ lint 必须 error 0
+⑦ lint 必须 error 0
 ```
 
 ## 四、三条教训，逐字带进每份子 agent 任务书
@@ -94,7 +106,7 @@ python3 分析/tests/lint_method_families.py      # 基线：error 0 · warning 
    按主考点归 diff1v，解法主体在 `calc.ode`。只补「反求切点」这一步，归属你定，写进报告。
 4. **mvt 的 A5 自递归 `when`** 措辞「且存在有限阶 n 使 F^{(n)} 可定号」**可能过强**
    （把存在性断言塞进了执行条件）—— 上一任拟的，请顺带扫一眼。
-5. **int1v 与重积分的派工单**由你写；照 `第四轮` 那份的骨架即可。
+5. **int1v 与重积分的派工单**由你写（照 `第四轮` 那份的骨架），再派给子 agent A 执行。
 
 ## 六、红线（越过就是越权）
 
@@ -106,7 +118,7 @@ python3 分析/tests/lint_method_families.py      # 基线：error 0 · warning 
 - **2024 / 2025 / 2026 三年是用户的模考卷**：题面不许去 `papers/` 翻，也不要在报告里展开题干。
   需要的构造都已在审查报告里。另：`papers/2026` 对 2026-11 的 OCR 解析给出 "1+z"，
   **经两次独立复算判定为错**（正确为 0），不要采信。
-- **只动目标族一个文件**（外加你的报告与看板行）。
+- 子 agent A **只动目标族一个文件**（外加它的报告与看板行）；子 agent B **纯只读**，`files_changed: []`。
 
 ## 七、几个会绊住你的坑
 
