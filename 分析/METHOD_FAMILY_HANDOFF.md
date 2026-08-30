@@ -263,30 +263,33 @@ batch3_plan:
       - ~~mvt BL-1~~ **已补完**（codex e1230df）：A8 扩到存在性等式格，新增 route Q5
       - ~~mvt BL-2~~ **已补完**（codex e1230df）：新增 A11 + boundary B8（witness 经 integrator 复算成立）
       - ~~mvt BL-4~~ **已补完**（codex e1230df）：A5 增自递归边与最小值支，连带同步 guard#5 与 B5
-      - geom BL-1：2013-19（母线不在坐标面）无 action 接收
-      - geom BL-2：2025-20（绕一般直线旋转）无 action 接收，且 B6 宣布该情形 scope 外
+      - ~~geom BL-1~~ **已闭环**（codex 4bfd8e1 新增 A1b；复核 confirmed_fixed）
+      - ~~geom BL-2~~ **已闭环**（新增 A1c；B6 的 recovery 改指 A1b/A1c，「超出本族 scope」清零）
     B2_counter_witness:
       # 2026-08-29 更新：以下两条已由 codex 补完内容（分支 codex/lint-hardening-and-halffix，
       # commit 6b5a7e1），integrator 裁定采纳，见 分析/审查/claude-adjudication-codex-lint-hardening-6b5a7e1.md。
       # 是否记 confirmed_fixed 须由**另一个** agent 复核，本裁定不代行。
-      - **mvt BL-3（已补完，待复核）**：guard#4 已改「定号或有界」，但 A7 的 description /
+      - ~~mvt BL-3~~ **已闭环**（codex 补完 A7 六处旧语义；复核方判 partially_fixed，阻塞成分已解除）
+      # 原文（保留供追溯）：mvt BL-3（已补完，待复核）：guard#4 已改「定号或有界」，但 A7 的 description /
         followup 唯一收尾（「判定该阶导数的符号」）/ terminal_when（「余项定号后」）/
         remainder_note（「必须定号、只能用整体信息」）/ B4 结论句 / counter_witness_search
         **六处**仍是旧语义，router 执行的是 followup 那一侧 ⇒ 2024-19(1) 仍卡死
-      - **mint BL-3（已补完，待复核）**：guard#1 已拆出轮换分支，但 A3 的
+      - ⏳ **mint BL-3（已补完，但从未独立复核）** —— codex 第一轮补的 A3.applies_when，
+        当时未随重积分族一起送复核。**重积分那一轮的 confirmed_fixed 复核必须把它一并纳入。**
+      # 原文：mint BL-3（已补完，待复核）：guard#1 已拆出轮换分支，但 A3 的
         applies_when 仍要求「被积函数在相应变换下有确定的奇偶性」⇒ 2015-12 的 x+2y+3z
         无奇偶性，A3 在 router 层进不去，L136 的轮换支仍不可达
-      - geom BL-3：A2 的消元结果是投影的**超集**，缺「被消变量实解存在条件」guard
+      - ~~geom BL-3~~ **已闭环**（A2 补值域约束进 local_operation，新增 B7）
         （反例 {x²+z²=1, y²+z²=1}：消元给 x²=y² 的完整直线，真实投影只有 |x|≤1 的线段）
     B4_semantic:
       - diff1v BL-5：A2/A5 的 continuation 交给 limit 族，而该族 exclusions 明文未纳入该类极限
-      - diff1v BL-7：A7 的三个真题引用全错（应为 2005-1/2007-2/2012-1/2014-1/2023-1）
+      - ~~diff1v BL-7~~ **已闭环**（integrator 改为 2005-1/2007-2/2012-1/2014-1/2023-1）
       - int1v BLK-4：13 个题号引用中至少 9 个不符
       - int1v BLK-6：scope 与 exclusions 自相矛盾，2026-20/2008-18 在九族中无家
       - mint NB-1：10 条引用中 5 条与 TSV 冲突
       - ~~mvt BL-5~~ **已补完**（codex e1230df）：all_of → sequence + any_of{A1,A3,A5}（改边而非删点）
-      - mvt NB-1：4 条 mapping 中 3 条与题面不符
-      - geom BL-4(b)：2013-19/2025-20 挂 A1，与 A1.applies_when、guard#7、B6 三处矛盾
+      - ~~mvt NB-1~~ **已闭环**（codex 重做 positive_instance_mapping）
+      - ~~geom BL-4(b)~~ **已闭环**（mapping 拆三条，重挂 A1b/A1c）
     共通: 五族的 scan_basis 都引用了不存在的 `高数真题题面_2004-2023.md`（**已全部修复**）
   cross_review_of_integrator_fixes:
     reviewed_at: 2026-08-29
