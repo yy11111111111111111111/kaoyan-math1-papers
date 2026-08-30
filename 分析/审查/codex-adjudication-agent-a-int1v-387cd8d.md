@@ -28,3 +28,9 @@ final_verdict: B 的字段级处方落地后恢复 candidate
 
 本轮路线内容由子 agent A 修改；confirmed_fixed 判断由另一子 agent B 独立作出；
 integrator 只做范围/基线/lint 核验、cherry-pick、B 明确处方、状态裁定及下游集成。
+
+## 定向复核尾注
+
+B 在 `710db29` 首次验收处方时仍判 `not_fixed`：当前态正文留有旧 quarantine 结论。
+integrator 逐字采用 B 的替换处方；B 在 `3b48cdc` 再验后判 NF-B4-1 `confirmed_fixed`，
+`files_changed: []`。本裁定不隐去这次退回。

@@ -52,3 +52,9 @@ BLK-1/2、2004–2023 mapping、2008-18、顺带项、regression 与新状态 bl
 2026-14/20 为 medium。未读 solutions/ 与 2024–2026 papers；图形题依题面库 linked figure
 与 OCR 题干；`global_exhaustiveness: not_established` 为常设状态，不构成 blocker。
 
+## 处方落地后的定向复核
+
+- HEAD `710db29`：`not_fixed`。结构处方均已落地，但“当前未解决”正文仍独立声称
+  本轮不改 challenged/quarantine；B 处方要求改为历史角色陈述。
+- HEAD `3b48cdc`：`confirmed_fixed`，`files_changed: []`。上述当前态矛盾已消除，
+  NF-B4-1 全部字段一致，无遗漏。
