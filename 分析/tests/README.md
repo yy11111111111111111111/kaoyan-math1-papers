@@ -18,6 +18,18 @@ python3 test_D2.py     # 检验 D2：具体考点 × 高数解答位
 python3 test_G.py      # 检验 G：空窗 → 下一场出现
 ```
 
+另有两个不产出统计量的检查脚本：
+
+```bash
+python3 lint_method_families.py   # 方法族 schema lint（CALC-METHOD-FAMILY-v1.3.1）
+python3 check_source_sha.py       # 断言各文件 frontmatter 的 source_tsv_sha256 与实际 TSV 一致
+```
+
+`check_source_sha.py` 补的是一个静默失效点：`考点标注.tsv` 重建后，20 余份上层文件
+声明的 `source_tsv_sha256` 会集体过期，而在它之前没有任何机制会报错。
+`common.input_sha()` 一直能算这个值，但只写进报告的 `input_sha` 字段供人看，不做断言。
+失配时非零退出，处理方式见 `CLAUDE.md` §4.0.1。
+
 无第三方依赖，标准库即可。每个脚本把结果打成一段 YAML，字段固定：
 
 ```yaml
