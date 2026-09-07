@@ -1,0 +1,15 @@
+{
+  "package": "LA-OR-20260907",
+  "version": "1.0",
+  "status": "generator_checked_independent_validation_pending",
+  "student_attempts_received": false,
+  "files": {
+    "00_后续AI教学路线.md": "7cba658ad5b360e917e5a08dcc7a4464605cb4fb8a400ae91c0978c327169497",
+    "01_原创复习题.md": "6f7d9e513647ed3c2ced4027661f5815a0036993335c6f2ae0d9f117a1c0f432",
+    "02_教师用解答与核验.md": "46db9ddebd1d5e08ef0464838f2350d6cf87699e3f73d31f1216492e18845edf",
+    "03_教学记录.md": "7295ca0f1ff796c2c28bf2b64298cbb7c37b0e57ce71bb341cc30e81781e3435",
+    "数学核算日志.txt": "3e12aa5bc199eb7eadd484cce4d41053dee39a3d6da5e5ae10a038a65b34ea13",
+    "审题交接/Stage_A.md": "12b15c14ae2a1b8e33bc70360de3bf41be2a4fba126a18150ec824b6b5fdb3b1",
+    "审题交接/Stage_B.md": "8ed66339d05620a9e2ba6c4292cd23c1af0dc140b88ad0e84e7cbbf60c4a7288"
+  }
+}
