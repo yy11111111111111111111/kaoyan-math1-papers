@@ -115,13 +115,28 @@ population_calibration: {status: uncalibrated}
 ## 7. 状态
 
 ```yaml
-status: generation_complete / independent_review_done / protocol_validation_incomplete / assignment_fit_pending
-item_stems_changed: false   # 本报告只提修订建议，未改动 01_题目.md
-claims_supported: []        # 本轮无
+status: generation_complete / independent_review_done / revisions_applied_v2 / protocol_validation_incomplete / assignment_fit_pending
+item_stems_changed: true    # 见 §8；§1—§7 是对 v1 的审查记录，未因修订改写
+claims_supported: []        # v1 本轮无；v2 未重验，同样没有
 next_actions:
-  - 按 R1、R2 修订题面并升版，保留变更记录
   - 按 §4 补齐 Stage A packet 与 feature 声明
-  - 由未接触 Stage B 的一方在解封前声明 route family 后重跑 Extended
+  - 由未接触 Stage B 的一方在解封前声明 route family 后，对 v2 重跑 Core 与 Extended
+  - 第2题 v2 的新增小问与第3题 v2 的 b≠0 结论需第三方独立复核
 ```
 
-审查者：Claude（Opus 会话），2026-09-11。本报告只覆盖 681c86f 的 v1 题面；题面或包装变更后须按新版本重验，不继承本报告结论。
+审查者：Claude（Opus 会话），2026-09-11。§1—§7 只覆盖 681c86f 的 v1 题面并保持原样；v2 须按新版本重验，不继承本报告结论。
+
+## 8. 变更执行记录（v1 → v2，2026-09-11）
+
+用户指示后，R1—R4 已全部应用。改动如下，均在同一提交内：
+
+| 编号 | 文件 | 改动 | 答案是否变化 |
+|---|---|---|---|
+| R1 | 01 第3题 | 题面加「且 b≠0」 | 不变。v1 的示例本就取 b≠0；排除 b=0 后末问只剩一个正确答案，且强于「不一定」：总能改变 |
+| R2 | 01 第8题 | 题面写明表示矩阵的第一、第二列分别是 T(u)、T(v) 在基 B 下的坐标 | 不变，只是转置答案现在可裁定 |
+| R4 | 01 第2题 | 拆成三小问；新增 e=(0,1,0)^T；末问改为要求 (AQ)d 与 A(Qd) 的一般关系及其对两个核的含义 | 新增内容。c 与 e 一个被 A 杀死、一个被 AQ 杀死，「相等」不再能不理解机制就写出 |
+| R3 | 02 前置范围 | 补入「实对称矩阵的核与列空间互为正交补（也可由 A^T=A 现场推出）」 | 不变，补的是第9题的前置声明缺口 |
+
+同步更新：`01` 标题与说明升为 v2；`02` 的适用题面改为 v2；`03` 中第2、3、8题条目由审查方同步并标注「v2 同步」，其余7题条目保持 v1 原文；`00` 补一行状态。
+
+效力限制，按 `00` 第4条：**不得把 v2 的修订读成 v1 原本已通过。**§2 的逐题状态是对 v1 的判定，其中第3题 v1 为 contradicted；v2 修掉了该缺口，但 v2 本身尚未重验，所以 v2 的全部 10 题仍是 `not_established`，没有任何一题可用于取证。第2题 v2 新增的小问与第3题 v2 的强化结论由审查方给出并自行核验（精确有理数运算），尚无第三方独立复核。

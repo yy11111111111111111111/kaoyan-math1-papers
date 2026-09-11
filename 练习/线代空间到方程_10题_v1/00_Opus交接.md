@@ -6,6 +6,7 @@
 - 基础提交：509d73c99781351dbcc2c17af9de7f38c160fd11。
 - 分支：claude/postgraduate-math-exam-szkbdo。
 - 状态：generation_complete / independent_validation_pending / assignment_fit_pending。
+- 2026-09-11 更新：已完成一次独立审题，结论见 `05_Opus验收报告.md`；题面按其必要修改升为 v2（第2、3、8题），`02` 前置范围补一项。协议验收仍未完成，v2 需按新版本重验，不继承 v1 结论。
 - 本轮仅有生成侧推导；没有独立盲验、正式结构验收或学习者新作答。不能将参考答案称为已验收标准答案。
 
 ## 阅读顺序
